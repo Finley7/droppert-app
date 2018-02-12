@@ -9,6 +9,7 @@
 namespace App\Controller;
 use App\Model\Table\UsersTable;
 use Cake\Core\Configure;
+use Cake\Http\Cookie\Cookie;
 use Cake\Network\Exception\MethodNotAllowedException;
 
 
@@ -31,14 +32,21 @@ class UsersController extends AppController
 
             if($user) {
 
-                $this->Cookie->configKey('uuid', ['expires' => '+120 days', 'httpOnly' => true]);
-                $this->Cookie->write('uuid', ['id' => $user['session']->id]);
+                $cookie = (new Cookie('user'))
+                    ->withValue($user['session']->id)
+                    ->withExpiry(new \DateTime('+120 days'))
+                    ->withHttpOnly(true)
+                    ->withPath('/');
 
                 $this->Flash->success(__('Login was successfull'));
 
+                return $this->response
+                    ->withCookie($cookie)
+                    ->withLocation($this->Auth->redirectUrl());
             }
 
-            debug($user);
+            $this->Flash->error(__('We could not sign you in'));
+
         }
     }
 

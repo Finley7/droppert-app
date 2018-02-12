@@ -49,10 +49,8 @@ class DroppertAuthenticate extends BaseAuthenticate
             ]);
 
             if($sessionsRegistry->save($session)) {
-
                 $user['session'] = $session;
                 return $user;
-
             }
 
             throw new FatalErrorException('Session was not saved in database');

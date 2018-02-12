@@ -14,6 +14,8 @@
  */
 namespace App\Controller;
 
+use App\Model\Table\SessionsTable;
+use App\Model\Table\UsersTable;
 use Cake\Controller\Controller;
 use Cake\Event\Event;
 
@@ -23,6 +25,8 @@ use Cake\Event\Event;
  * Add your application-wide methods in the class below, your controllers
  * will inherit them.
  *
+ * @property SessionsTable Sessions
+ * @property UsersTable Users
  * @link https://book.cakephp.org/3.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller
@@ -55,5 +59,31 @@ class AppController extends Controller
             'authenticate' => 'Droppert',
             'authorize' => 'Droppert',
         ]);
+
+        if (!is_null($this->request->getCookie('user'))) {
+            $this->loadModel('Sessions');
+            $this->loadModel('Users');
+
+            $cookie = $this->request->getCookie('user');
+
+            $userSession = $this->Sessions->find('all')
+                ->where([
+                    'Sessions.id' => $cookie,
+                    'expires >= ' => new \DateTime('now')
+                ])->first();
+
+            similar_text($userSession->user_agent, $_SERVER['HTTP_USER_AGENT'], $percentage);
+
+            if ($percentage <= 20) {
+                $this->Cookie->delete('user');
+                $this->Auth->logout();
+                $this->Flash->error(__('Your session deviated too much from your user agent and that is why you have been logged out'));
+            }
+
+            $user = $this->Users->get($userSession->user_id);
+
+            $this->Auth->setUser($user->toArray());
+            $this->set('user', $user);
+        }
     }
 }
