@@ -7,6 +7,7 @@
 ?>
 <div class="card">
     <div class="card-body">
+        <?= $this->Flash->render() ?>
         <legend><?= __('Create a new account'); ?></legend>
         <?= $this->Form->create($user); ?>
         <div class="form-group">

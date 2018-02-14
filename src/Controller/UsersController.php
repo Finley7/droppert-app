@@ -22,6 +22,15 @@ class UsersController extends AppController
         parent::initialize();
         $this->loadComponent('Cookie');
         $this->Auth->allow(['register']);
+
+        if($this->Auth->user('id') > 0) {
+            $_guestViews = ['login', 'register'];
+
+            if (in_array($this->request->getAttributes()['params']['action'], $_guestViews)) {
+                $this->Flash->error(__('You are already logged in, {0}', $this->Auth->user('username')));
+                return $this->redirect($this->Auth->redirectUrl());
+            }
+        }
     }
 
     public function login() {

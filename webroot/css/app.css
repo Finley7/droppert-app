@@ -1,3 +1,132 @@
+@import url('https://fonts.googleapis.com/css?family=Fira+Sans:300,300i,400,400i,700,700i');
+
 body, html {
-    font-family: 'Helvetica Neue', sans-serif;
+    font-family: 'Fira Sans', sans-serif;
+    background: url(../img/escheresque.png);
+}
+.main-container {
+    background: #fff;
+}
+.hidden {
+    display: none;
+}
+.header {
+    background: url(../img/ep_naturalblack.png);
+    padding: 30px 20px 10px 20px;
+}
+.slogan {
+    font-size: 18px;
+    color: #fff;
+    font-weight: 300;
+    margin-left: 15px;
+}
+.error-message {
+    color: #ec5840;
+    padding-bottom: .8rem;
+}
+
+.form-error {
+    display: block;
+    margin-top: inherit;
+    margin-bottom: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+[type=color], [type=date], [type=datetime-local], [type=datetime], [type=email], [type=month], [type=number], [type=password], [type=search], [type=tel], [type=text], [type=time], [type=url], [type=week], textarea{
+    box-shadow: 0;
+    -webkit-transition: none;
+    transition:none;
+    border-radius: 2px;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance:textfield;
+}
+.callout.info,
+.callout.primary {
+    color: #fff;
+    background-color: #3498db;
+    border-color: #3498db
+}
+
+.callout.alert {
+    color: #fff;
+    background-color: #D33C44 !important;
+    border-color: #D33C44;
+}
+
+.callout.success {
+    color: #fff;
+    border-color: #18bc9c;
+    background-color: #1ad1ad
+}
+
+.callout.warning {
+    color: #fff;
+    border-color: #f39c12;
+    background-color: #f39c12
+}
+
+.callout.success::before {
+    content: "\f058"
+}
+
+.callout.alert::before,
+.callout.primary::before,
+.callout.info::before {
+    content: "\f071"
+}
+
+
+.callout.alert::before,
+.callout.info::before,
+.callout.primary::before,
+.callout.success::before {
+    font-family: 'Font Awesome 5 Free';
+    padding: 0 5px 0 0;
+    margin: 0;
+    color: #fff;
+    font-weight: 600
+}
+
+.callout.alert a, .callout.info a, .callout.warning a, .callout.success a {
+    color: white;
+}
+.card > .card-body {
+    padding: 15px;
+}
+
+#upload-files {
+    text-align:center;
+    padding: 60px;
+    background: #eee;
+    cursor:pointer;
+}
+#upload-files.hover {
+    background: #3adb76;
+    color: #fff;
+}
+#upload-files::before {
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    padding-right: 5px;
+    content: '\f019';
+}
+.not-allowed {
+    color: red;
+}
+.icon::before {
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    padding-right: 5px;
+}
+.icon.upload::before {
+    content: '\f093';
 }
