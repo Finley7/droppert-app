@@ -7,13 +7,18 @@
  */
 
 namespace App\Controller;
+use App\Model\Table\PostsTable;
 
 
+/**
+ * @property PostsTable Posts
+ */
 class PostsController extends AppController
 {
     public function index() {
 
+        $posts = $this->Posts->find('all');
 
-
+        $this->set(compact(['posts']));
     }
 }
