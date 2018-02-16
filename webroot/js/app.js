@@ -87,10 +87,63 @@ bytify = (bytes, precision) => {
 uploadFiles = (event) => {
     event.preventDefault();
 
+    $('#upload-button').attr('disabled', true);
+    $('#upload-button').val('...');
+
+
+    let form = $('#upload-files-form');
+    let formData = new FormData();
+
+    $.each($('#upload-files-form input'), (key, input) => {
+        formData.append($(input).attr('name'), $(input).attr('value'));
+    });
+
+    $.each(_files, (key, file) => {
+        formData.append('file_' + key, file);
+    });
+
     let request = $.ajax({
         'url': $('#upload-files-form').attr('action'),
-        'data': {files: _files, data: $('#upload-files-form').serialize()},
+        'data': formData,
+        'processData': false,
+        'contentType': false,
         'type': 'POST',
         'dataType': 'JSON',
+        'success': (response) => {
+            $.each(response.uploaded, (key, uploadedFile) => {
+
+                $.each(_files, (key, file) => {
+
+                    if(file.name == uploadedFile.name + '.' + uploadedFile.extension) {
+                        $('.preview-medias').html('').append('<li style="color:#088A08"><i class="fa fa-check"></i> '+ file.name +'</li>');
+                    }
+
+                });
+
+            });
+
+            $.each(response.denied, (key, deniedFile) => {
+
+                $.each(_files, (key, file) => {
+
+                    if(file.name == deniedFile.name + '.' + deniedFile.extension) {
+                        $('.preview-medias').html('').append('<li style="color:tomato"><i class="fa fa-times"></i> '+ file.name +'</li>');
+                    }
+
+                });
+
+            });
+
+            if(response.uploaded.length > 0) {
+                $('#upload-button').remove();
+                $('#upload-button-group').append('<a href="'+ response.action +'" class="success button">Volgende</a>');
+            }
+        },
+        'error': (error) => {
+            console.log(error);
+
+            $('#upload-button').attr('disabled', false);
+            $('#upload-button').val('Upload');
+        }
     });
 }

@@ -3,6 +3,10 @@
 * @var \Cake\View\View $this
  * @var \App\Model\Entity\User $user
  */
+for($i = 0; $i <= 10; $i++) {
+    $this->Form->unlockField('file_' . $i);
+}
+$this->Form->unlockField('media');
 ?>
 <!DOCTYPE html>
 <html>
@@ -43,15 +47,16 @@
             'onsubmit' => 'uploadFiles(event)',
             'id' => 'upload-files-form'
     ]); ?>
-        <div class="input-group">
-            <?= $this->Form->control('files', [
-                    'type' => 'file',
-                    'multiple' => 'true',
-                    'class' => 'form-control',
-                    'onchange' => 'handleSelect(event)'
-            ]); ?>
+        <div id="upload-button-group" class="input-group">
+<!--            --><?//= $this->Form->control('files', [
+//                    'type' => 'file',
+//                    'multiple' => 'true',
+//                    'class' => 'form-control',
+//                    'onchange' => 'handleSelect(event)'
+//            ]); ?>
+            <input type="file" name="media" multiple="true" onchange="handleSelect(event)">
         </div>
-    <?= $this->Form->button(__('Upload'), ['class' => 'success button icon upload']); ?>
+    <?= $this->Form->button(__('Upload'), ['id' => 'upload-button', 'class' => 'success button icon upload']); ?>
     <?= $this->Form->end(); ?>
     <button class="close-button" onclick="emptyList()" data-close aria-label="Close modal" type="button">
         <span aria-hidden="true">&times;</span>
@@ -69,7 +74,7 @@
                             <p class="slogan"><?= __('Media sharing like a boss.'); ?></p>
                         </div>
                         <div class="cell large-3 medium-3 small-12">
-                            <div id="upload-files">DROP BESTANDEN</div>
+                            <div id="upload-files"><?= __('DROP MEDIA'); ?></div>
                         </div>
                     </div>
                     <div class="grid-x navigation">

@@ -65,6 +65,10 @@ class UsersController extends AppController
             throw new MethodNotAllowedException(__('Registration is disabled'));
         }
 
+        if($this->request->getQueryParams()['src'] == 'with-media') {
+            $this->viewBuilder()
+                ->setTemplate('auth-with-media');
+        }
 
         $user = $this->Users->newEntity(['associated' => ['Roles']]);
 
