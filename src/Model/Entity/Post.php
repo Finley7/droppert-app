@@ -10,15 +10,15 @@ use Cake\ORM\Entity;
  * @property string $slug
  * @property string $title
  * @property string $description
- * @property int $yays
- * @property int $nays
  * @property int $user_id
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $updated
  * @property bool $deleted
+ * @property string $tags
  *
  * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\Media[] $media
+ * @property \App\Model\Entity\Rating[] $ratings
  * @property \App\Model\Entity\Reply[] $replies
  */
 class Post extends Entity
@@ -37,14 +37,14 @@ class Post extends Entity
         'slug' => true,
         'title' => true,
         'description' => true,
-        'yays' => true,
-        'nays' => true,
         'user_id' => true,
         'created' => true,
         'updated' => true,
         'deleted' => true,
+        'tags' => true,
         'user' => true,
         'media' => true,
+        'ratings' => true,
         'replies' => true
     ];
 }

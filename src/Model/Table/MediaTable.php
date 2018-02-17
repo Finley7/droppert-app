@@ -1,9 +1,12 @@
 <?php
 namespace App\Model\Table;
 
+use App\Model\Entity\Media;
+use Cake\Event\Event;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Utility\Security;
 use Cake\Validation\Validator;
 
 /**
@@ -42,12 +45,10 @@ class MediaTable extends Table
         $this->addBehavior('Timestamp');
 
         $this->belongsTo('Posts', [
-            'foreignKey' => 'post_id',
-            'joinType' => 'INNER'
+            'foreignKey' => 'post_id'
         ]);
         $this->belongsTo('Users', [
-            'foreignKey' => 'user_id',
-            'joinType' => 'INNER'
+            'foreignKey' => 'user_id'
         ]);
     }
 
@@ -69,6 +70,12 @@ class MediaTable extends Table
             ->maxLength('name', 150)
             ->requirePresence('name', 'create')
             ->notEmpty('name');
+
+        $validator
+            ->scalar('filename')
+            ->maxLength('filename', 255)
+            ->requirePresence('filename', 'create')
+            ->notEmpty('filename');
 
         $validator
             ->scalar('content_type')
@@ -103,5 +110,11 @@ class MediaTable extends Table
         $rules->add($rules->existsIn(['user_id'], 'Users'));
 
         return $rules;
+    }
+
+    public function beforeSave(Event $event, Media $media) {
+        if($media->isNew()) {
+            $media->set('id', bin2hex(Security::randomBytes(16)));
+        }
     }
 }

@@ -19,11 +19,12 @@ class MediaFixture extends TestFixture
     public $fields = [
         'id' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'name' => ['type' => 'string', 'length' => 150, 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'filename' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'content_type' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'size' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'extension' => ['type' => 'string', 'length' => 75, 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
-        'post_id' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
-        'user_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
+        'post_id' => ['type' => 'string', 'length' => 255, 'null' => true, 'default' => '', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'user_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'created' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => 'CURRENT_TIMESTAMP', 'comment' => '', 'precision' => null],
         '_indexes' => [
             'media_posts_id_fk' => ['type' => 'index', 'columns' => ['post_id'], 'length' => []],
@@ -48,14 +49,15 @@ class MediaFixture extends TestFixture
      */
     public $records = [
         [
-            'id' => '00a64cab-132e-47e0-b8cb-5bae3c921635',
+            'id' => 'ee98cc12-b202-4116-9773-dc87ed9ea0d0',
             'name' => 'Lorem ipsum dolor sit amet',
+            'filename' => 'Lorem ipsum dolor sit amet',
             'content_type' => 'Lorem ipsum dolor sit amet',
             'size' => 1,
             'extension' => 'Lorem ipsum dolor sit amet',
             'post_id' => 'Lorem ipsum dolor sit amet',
             'user_id' => 1,
-            'created' => '2018-02-11 23:02:42'
+            'created' => '2018-02-16 21:46:56'
         ],
     ];
 }

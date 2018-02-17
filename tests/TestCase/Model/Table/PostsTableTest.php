@@ -30,7 +30,8 @@ class PostsTableTest extends TestCase
         'app.replies',
         'app.sessions',
         'app.roles',
-        'app.users_roles'
+        'app.users_roles',
+        'app.ratings'
     ];
 
     /**

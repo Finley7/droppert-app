@@ -11,6 +11,7 @@ use App\Model\Table\UsersTable;
 use Cake\Core\Configure;
 use Cake\Http\Cookie\Cookie;
 use Cake\Network\Exception\MethodNotAllowedException;
+use Cake\Routing\Router;
 
 
 /**
@@ -18,10 +19,28 @@ use Cake\Network\Exception\MethodNotAllowedException;
  */
 class UsersController extends AppController
 {
+    private $_withMedia = false;
+
     public function initialize() {
         parent::initialize();
         $this->loadComponent('Cookie');
         $this->Auth->allow(['register']);
+
+        if($this->Auth->user('id') > 0) {
+            $_guestViews = ['login', 'register'];
+
+            if (in_array($this->request->getAttributes()['params']['action'], $_guestViews)) {
+                $this->Flash->error(__('You are already logged in, {0}', $this->Auth->user('username')));
+                return $this->redirect($this->Auth->redirectUrl());
+            }
+        }
+
+        if(
+            isset($this->request->getQueryParams()['src']) &&
+            !is_null($this->request->getCookie('media')) &&
+            $this->request->getQueryParams()['src'] == 'with-media') {
+            $this->_withMedia = true;
+        }
     }
 
     public function login() {
@@ -40,6 +59,12 @@ class UsersController extends AppController
 
                 $this->Flash->success(__('Login was successfull'));
 
+                if($this->_withMedia == true) {
+                    return $this->response
+                        ->withCookie($cookie)
+                        ->withLocation(Router::url(['controller' => 'Posts', 'action' => 'add']));
+                }
+
                 return $this->response
                     ->withCookie($cookie)
                     ->withLocation($this->Auth->redirectUrl());
@@ -52,10 +77,15 @@ class UsersController extends AppController
 
     public function register()
     {
+
         if(!Configure::read('App.registration')) {
             throw new MethodNotAllowedException(__('Registration is disabled'));
         }
 
+        if($this->_withMedia == true) {
+            $this->viewBuilder()
+                ->setTemplate('auth-with-media');
+        }
 
         $user = $this->Users->newEntity(['associated' => ['Roles']]);
 
@@ -63,11 +93,34 @@ class UsersController extends AppController
 
             $user->primary_role = Configure::read('App.user_role');
             # TODO: fix this depracted code.
-            $this->request->data['roles']['_ids'] = [Configure::read('App.user_role')];
+            $this->request->data['roles']['_ids'] = [Configure::read('App.user_role'), Configure::read('App.ajax_role')];
 
             $user = $this->Users->patchEntity($user, $this->request->getData(), ['associated' => ['Roles']]);
 
             if($this->Users->save($user, ['associated' => ['Roles']])) {
+
+                if($this->_withMedia == true) {
+
+                    $this->request->data['username'] = $user->username;
+                    $this->request->data['password'] = $this->request->getData()['password'];
+
+                    $user = $this->Auth->identify();
+
+                    if($user) {
+
+                        $cookie = (new Cookie('user'))
+                            ->withValue($user['session']->id)
+                            ->withExpiry(new \DateTime('+120 days'))
+                            ->withHttpOnly(true)
+                            ->withPath('/');
+
+
+                        return $this->response
+                            ->withCookie($cookie)
+                            ->withLocation(Router::url(['controller' => 'Posts', 'action' => 'add']));
+                    }
+
+                }
 
                 $this->Flash->success(__('Your account has been created'));
                 return $this->redirect(['action' => 'login']);
