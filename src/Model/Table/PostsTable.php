@@ -1,9 +1,13 @@
 <?php
 namespace App\Model\Table;
 
+use App\Model\Entity\Post;
+use Cake\Event\Event;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Utility\Security;
+use Cake\Utility\Text;
 use Cake\Validation\Validator;
 
 /**
@@ -11,6 +15,7 @@ use Cake\Validation\Validator;
  *
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
  * @property \App\Model\Table\MediaTable|\Cake\ORM\Association\HasMany $Media
+ * @property \App\Model\Table\RatingsTable|\Cake\ORM\Association\HasMany $Ratings
  * @property \App\Model\Table\RepliesTable|\Cake\ORM\Association\HasMany $Replies
  *
  * @method \App\Model\Entity\Post get($primaryKey, $options = [])
@@ -49,6 +54,9 @@ class PostsTable extends Table
         $this->hasMany('Media', [
             'foreignKey' => 'post_id'
         ]);
+        $this->hasMany('Ratings', [
+            'foreignKey' => 'post_id'
+        ]);
         $this->hasMany('Replies', [
             'foreignKey' => 'post_id'
         ]);
@@ -68,12 +76,6 @@ class PostsTable extends Table
             ->allowEmpty('id', 'create');
 
         $validator
-            ->scalar('slug')
-            ->maxLength('slug', 255)
-            ->requirePresence('slug', 'create')
-            ->notEmpty('slug');
-
-        $validator
             ->scalar('title')
             ->maxLength('title', 150)
             ->requirePresence('title', 'create')
@@ -84,20 +86,11 @@ class PostsTable extends Table
             ->requirePresence('description', 'create')
             ->notEmpty('description');
 
-        $validator
-            ->integer('yays')
-            ->requirePresence('yays', 'create')
-            ->notEmpty('yays');
 
         $validator
-            ->integer('nays')
-            ->requirePresence('nays', 'create')
-            ->notEmpty('nays');
-
-        $validator
-            ->boolean('deleted')
-            ->requirePresence('deleted', 'create')
-            ->notEmpty('deleted');
+            ->scalar('tags')
+            ->maxLength('tags', 255)
+            ->allowEmpty('tags');
 
         return $validator;
     }
@@ -114,5 +107,16 @@ class PostsTable extends Table
         $rules->add($rules->existsIn(['user_id'], 'Users'));
 
         return $rules;
+    }
+
+    public function beforeSave(Event $event, Post $post){
+
+        if($post->isNew()) {
+            $post->set('id', bin2hex(Security::randomBytes(2)));
+        }
+        $post->set('title', h($event->getData()['entity']['title']));
+        $post->set('description', h($event->getData()['entity']['description']));
+        $post->set('slug', Text::slug($event->getData()['entity']['title']));
+
     }
 }

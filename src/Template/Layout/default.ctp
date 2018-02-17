@@ -42,7 +42,6 @@ $this->Form->unlockField('media');
             <?= __('You still have unprocessed media, If you upload a new set of files, the current unprocessed media files will be deleted'); ?>
         </div>
 
-
     <?php endif; ?>
     </div>
     <ul class="preview-medias">
@@ -82,7 +81,7 @@ $this->Form->unlockField('media');
                 <div class="main-container">
                     <div class="grid-x">
                         <div class="cell large-9 medium-9 small-12 header">
-                            <?= $this->Html->image('logo.png'); ?>
+                            <?= $this->Html->image('logo.png', ['url' => ['controller' => 'Posts', 'action' => 'index', 'prefix' => false]]); ?>
                             <p class="slogan"><?= __('Media sharing like a boss.'); ?></p>
                         </div>
                         <div class="cell large-3 medium-3 small-12">
@@ -93,7 +92,82 @@ $this->Form->unlockField('media');
 
                     </div>
                     <div class="grid-x">
-                        <div class="cell">
+                        <div class="cell large-3 medium-3 small-12 header">
+                            <?= $this->element('sidebar'); ?>
+                        </div>
+                        <div class="cell large-9 medium-9 small-12 content">
+
+
+                            <div class="title-bar" data-responsive-toggle="nav-menu" data-hide-for="medium">
+                                <button class="menu-icon" type="button" data-toggle></button>
+                                <div class="title-bar-title">Menu</div>
+                            </div>
+
+                            <!-- Medium-Up Navigation -->
+                            <nav class="top-bar" id="nav-menu">
+
+                                <!-- Left Nav Section -->
+                                <div class="top-bar-left">
+                                    <ul class="vertical medium-horizontal menu">
+                                        <li><?= $this->Html->link(__('Today\'s best'), ['controller' => 'posts', 'action' => 'index', 'prefix' => false]); ?></li>
+                                        <li><?= $this->Html->link(__('Alltime best'), ['controller' => 'posts', 'action' => 'index', 'prefix' => false]); ?></li>
+                                    </ul>
+                                </div>
+
+                                <?php if(isset($user->id)): ?>
+                                <!-- Right Nav Section -->
+                                <div class="top-bar-right">
+                                    <ul class="vertical medium-horizontal menu" data-responsive-menu="drilldown medium-dropdown">
+                                        <li class="has-submenu">
+                                            <a href="#"><?= $user->username; ?></a>
+                                            <ul class="submenu menu vertical medium-horizontal" data-submenu>
+                                                <li><?= $this->Html->link(__('Session management'), [
+                                                        'controller' => 'Sessions',
+                                                        'action' => 'index',
+                                                        'prefix' => false
+                                                    ]); ?></li>
+                                                <li><?= $this->Form->postLink(__('Sign out'), [
+                                                        'controller' => 'Users',
+                                                        'action' => 'logout',
+                                                        'prefix' => false
+                                                    ]); ?></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <?php else: ?>
+                                    <div class="top-bar-right">
+                                        <ul class="vertical medium-horizontal menu" data-responsive-menu="drilldown medium-dropdown">
+                                            <li class="has-submenu">
+                                                <a href="#"><?= __('My account'); ?></a>
+                                                <ul class="submenu menu vertical medium-horizontal" data-submenu>
+                                                    <li><?= $this->Html->link(__('Sign in'), [
+                                                            'controller' => 'Users',
+                                                            'action' => 'login',
+                                                            'prefix' => false
+                                                        ]); ?></li>
+                                                    <li><?= $this->Html->link(__('Register'), [
+                                                            'controller' => 'Users',
+                                                            'action' => 'register',
+                                                            'prefix' => false
+                                                        ]); ?></li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                <?php endif; ?>
+                            </nav>
+
+
+
+<!--                            <ul class="menu navigation" style="float:right;">-->
+<!--                                <li>--><?//= $this->Html->link(__('Today\'s best'), ['controller' => 'posts', 'action' => 'index', 'prefix' => false]); ?><!--</li>-->
+<!--                                <li>--><?//= $this->Html->link(__('Alltime best'), ['controller' => 'posts', 'action' => 'index', 'prefix' => false]); ?><!--</li>-->
+<!--                            </ul>-->
+<!--                            <ul class="menu navigation">-->
+<!--                                <li>--><?//= $this->Html->link(__('Today\'s best'), ['controller' => 'posts', 'action' => 'index', 'prefix' => false]); ?><!--</li>-->
+<!--                                <li>--><?//= $this->Form->link(__('Alltime best'), ['controller' => 'posts', 'action' => 'index', 'prefix' => false]); ?><!--</li>-->
+<!--                            </ul>-->
                             <?= $this->fetch('content') ?>
                         </div>
                     </div>

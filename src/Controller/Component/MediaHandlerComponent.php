@@ -39,7 +39,7 @@ class MediaHandlerComponent extends Component
      * @var
      */
     private $_ffmpeg;
-    private $_watermarkPath = ROOT . DS . 'webroot' . DS . 'img' . DS . 'watermerk.png';
+    private $_watermarkPath = WWW_ROOT . DS . 'img' . DS . 'watermerk.png';
 
     /**
      * @param array $config
@@ -61,21 +61,19 @@ class MediaHandlerComponent extends Component
      */
     public function processAudio(Media $media, $tmpFile) {
 
-        move_uploaded_file($tmpFile, ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension);
+        move_uploaded_file($tmpFile, WWW_ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension);
 
         if ($media->extension != 'mp3') {
-            $audio = $this->_ffmpeg->open(ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension);
+            $audio = $this->_ffmpeg->open(WWW_ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension);
             $audio
-                ->save(new Mp3(), ROOT . DS . 'media' . DS . 'audio' . DS . $media->filename . '.mp3');
+                ->save(new Mp3(), WWW_ROOT . DS . 'media' . DS . 'audio' . DS . $media->filename . '.mp3');
 
         }
         else
         {
-            $file = new File(ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.mp3');
-            $file->copy(ROOT . DS . 'media' . DS . 'audio' . DS . $media->filename . '.mp3');
+            $file = new File(WWW_ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.mp3');
+            $file->copy(WWW_ROOT . DS . 'media' . DS . 'audio' . DS . $media->filename . '.mp3');
         }
-
-        $this->_cleanRaw();
 
     }
 
@@ -85,17 +83,17 @@ class MediaHandlerComponent extends Component
      */
     public function processImage(Media $media, $tmpFile)
     {
-        move_uploaded_file($tmpFile, ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension);
+        move_uploaded_file($tmpFile, WWW_ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension);
 
         if($media->extension != 'gif') {
             try {
                 $image = (new SimpleImage())
 
-                    ->fromFile(ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension)
+                    ->fromFile(WWW_ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension)
                     ->autoOrient()
-                    ->bestFit(600, 400)
+                    ->bestFit(600, 600)
                     ->overlay($this->_watermarkPath, 'bottom right')
-                    ->toFile(ROOT . DS . 'media' . DS . 'images' . DS . $media->filename . '.png', 'image/png', 70);
+                    ->toFile(WWW_ROOT . DS . 'media' . DS . 'images' . DS . $media->filename . '.png', 'image/png', 70);
 
 
             }
@@ -107,24 +105,34 @@ class MediaHandlerComponent extends Component
         {
             try {
             $image = (new SimpleImage())
-                ->fromFile(ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension)
+                ->fromFile(WWW_ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension)
                 ->autoOrient()
-                ->bestFit(600, 400)
+                ->bestFit(600, 600)
                 ->overlay($this->_watermarkPath, 'bottom right')
-                ->toFile(ROOT . DS . 'media' . DS . 'images' . DS . $media->filename . '.' . $media->extension, 'image/png', 50);
+                ->toFile(WWW_ROOT . DS . 'media' . DS . 'images' . DS . $media->filename . '.' . $media->extension, $media->content_type, 70);
             }
             catch(\Exception $e) {
                 die($e->getMessage());
             }
         }
 
-        $this->_cleanRaw();
+        try {
+            $image = (new SimpleImage())
+                ->fromFile(WWW_ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension)
+                ->autoOrient()
+                ->resize(300)
+                ->toFile(WWW_ROOT . DS . 'media' . DS . 'thumbnails' . DS . 'thumb_' . $media->filename . '.png', 'image/png', 40);
+        }
+        catch(\Exception $e) {
+            die($e->getMessage());
+        }
+
     }
 
     public function processVideo(Media $media, $tmpFile)
     {
-        move_uploaded_file($tmpFile, ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension);
-        $video = $this->_ffmpeg->open(ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension);
+        move_uploaded_file($tmpFile, WWW_ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension);
+        $video = $this->_ffmpeg->open(WWW_ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension);
 
         $video->filters()
             ->watermark($this->_watermarkPath, [
@@ -135,30 +143,27 @@ class MediaHandlerComponent extends Component
 
         $video
             ->frame(TimeCode::fromSeconds(1))
-            ->save(ROOT . DS . 'media' . DS . 'thumbnails' . DS . 'thumb_' . $media->filename . '.png');
+            ->save(WWW_ROOT . DS . 'media' . DS . 'thumbnails' . DS . 'thumb_' . $media->filename . '.png');
 
         switch ($media->extension) {
 
             case 'mp4':
-                $video->save(new X264(), ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
+                $video->save(new X264('libmp3lame', 'libx264'), WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
 
                 break;
 
             case 'webm':
-                $format = new X264();
+                $format = new X264('libmp3lame', 'libx264');
 
                 $video
-                    ->save($format, ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
+                    ->save($format, WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
 
             default:
                 $video
-                    ->save(new X264(), ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4')
-                    ->save(new WebM(), ROOT . DS . 'media' . DS . 'videos' . DS . 'webm' . DS . $media->filename . '.webm');
+                    ->save(new X264('libmp3lame', 'libx264'), WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
                 break;
         }
 
-
-        $this->_cleanRaw();
     }
 
     /**
@@ -171,9 +176,9 @@ class MediaHandlerComponent extends Component
     }
 
     protected function _cleanRaw() {
-        $folder = new Folder(ROOT . DS . 'media' . DS . 'raw', false);
+        $folder = new Folder(WWW_ROOT . DS . 'media' . DS . 'raw', false);
         foreach($folder->find() as $file) {
-            $f = new File(ROOT . DS . 'media' . DS . 'raw' . DS .  $file);
+            $f = new File(WWW_ROOT . DS . 'media' . DS . 'raw' . DS .  $file);
             $f->delete();
         }
 

@@ -59,7 +59,7 @@ class MediaController extends AppController
                     $media = $this->Media->newEntity();
                     $media->name = pathinfo($files[$key]['name'], PATHINFO_FILENAME);
                     $media->filename = bin2hex(Security::randomBytes(8));
-                    $media->extension = pathinfo($files[$key]['name'], PATHINFO_EXTENSION);
+                    $media->extension = strtolower(pathinfo($files[$key]['name'], PATHINFO_EXTENSION));
                     $media->size = $files[$key]['size'];
                     $media->post_id = null;
                     $media->user_id = (!is_null($this->Auth->user('id'))) ? $this->Auth->user('id') : null;

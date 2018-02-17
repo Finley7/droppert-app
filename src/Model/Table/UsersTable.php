@@ -61,6 +61,9 @@ class UsersTable extends Table
             'targetForeignKey' => 'role_id',
             'joinTable' => 'users_roles'
         ]);
+        $this->hasMany('Ratings', [
+            'foreignKey' => 'user_id',
+        ]);
     }
 
     /**

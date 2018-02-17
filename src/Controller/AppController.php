@@ -104,7 +104,7 @@ class AppController extends Controller
                 $this->Flash->set(
                     __('We\'ve found some unprocessed media files. {0}. You have {1} left to process them.',
                         '
-                        <a href="' .Router::url(['controller' => 'Post', 'action' => 'add']) . '">
+                        <a href="' .Router::url(['controller' => 'Posts', 'action' => 'add']) . '">
                         '. __('Process them') .'
                         </a>', 'some time'),
                     ['escape' => false]
