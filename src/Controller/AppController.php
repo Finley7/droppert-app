@@ -18,6 +18,7 @@ use App\Model\Table\SessionsTable;
 use App\Model\Table\UsersTable;
 use Cake\Controller\Controller;
 use Cake\Event\Event;
+use Cake\Routing\Router;
 
 /**
  * Application Controller
@@ -60,6 +61,11 @@ class AppController extends Controller
             'authorize' => 'Droppert',
         ]);
 
+        $this->_checkUser();
+        $this->_checkUnprocessedMedia();
+    }
+
+    protected function _checkUser() {
         if (!is_null($this->request->getCookie('user'))) {
             $this->loadModel('Sessions');
             $this->loadModel('Users');
@@ -84,6 +90,28 @@ class AppController extends Controller
 
             $this->Auth->setUser($user->toArray());
             $this->set('user', $user);
+        }
+    }
+
+    protected function _checkUnprocessedMedia() {
+        if(!is_null($this->request->getCookie('media'))) {
+            $cookie = $this->request->getCookie('media');
+
+            if (
+                $this->request->getAttributes()['params']['controller'] == 'Posts' &&
+                $this->request->getAttributes()['params']['action'] != 'add'
+            ) {
+                $this->Flash->set(
+                    __('We\'ve found some unprocessed media files. {0}. You have {1} left to process them.',
+                        '
+                        <a href="' .Router::url(['controller' => 'Post', 'action' => 'add']) . '">
+                        '. __('Process them') .'
+                        </a>', 'some time'),
+                    ['escape' => false]
+                );
+                $this->set('unprocessedMedia', true);
+            };
+
         }
     }
 }

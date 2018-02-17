@@ -35,11 +35,22 @@ $this->Form->unlockField('media');
             'Uploading some media are you? Be sure to check our {0}',
             $this->Html->link(__('guidelines'), ['controller' => 'page', 'action' => 'guidelines'])
         ); ?></p>
+    <div class="callouts">
+    <?php if(isset($unprocessedMedia) && $unprocessedMedia): ?>
+
+        <div class="callout warning">
+            <?= __('You still have unprocessed media, If you upload a new set of files, the current unprocessed media files will be deleted'); ?>
+        </div>
+
+
+    <?php endif; ?>
+    </div>
     <ul class="preview-medias">
     </ul>
     <ul class="denied-medias">
 
     </ul>
+    <div id="upload-modal-body">
     <?= $this->Form->create(null, [
         'url' => ['controller' => 'Media', 'action' => 'add', 'prefix' => 'ajax'],
             'type' => 'file',
@@ -48,19 +59,20 @@ $this->Form->unlockField('media');
             'id' => 'upload-files-form'
     ]); ?>
         <div id="upload-button-group" class="input-group">
-<!--            --><?//= $this->Form->control('files', [
-//                    'type' => 'file',
-//                    'multiple' => 'true',
-//                    'class' => 'form-control',
-//                    'onchange' => 'handleSelect(event)'
-//            ]); ?>
-            <input type="file" name="media" multiple="true" onchange="handleSelect(event)">
+            <input type="file" name="media" id="upload-input" multiple="true" onchange="handleSelect(event)">
         </div>
-    <?= $this->Form->button(__('Upload'), ['id' => 'upload-button', 'class' => 'success button icon upload']); ?>
+    <?= $this->Form->button(__('Upload'), ['id' => 'upload-button', 'class' => 'success button expanded icon upload']); ?>
     <?= $this->Form->end(); ?>
     <button class="close-button" onclick="emptyList()" data-close aria-label="Close modal" type="button">
         <span aria-hidden="true">&times;</span>
     </button>
+    </div>
+    <div class="loader" style="text-align:center;">
+        <div class="loading"></div>
+        <br>
+        <?= __('Uploading..'); ?>
+    </div>
+
 </div>
     <?= $this->Flash->render() ?>
 

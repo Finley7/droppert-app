@@ -10,15 +10,21 @@ namespace App\Controller\Ajax;
 
 
 use App\Controller\AppController;
+use App\Controller\Component\MediaHandlerComponent;
 use App\Model\Table\MediaTable;
 use Cake\Event\Event;
 use Cake\Filesystem\File;
 use Cake\Http\Cookie\Cookie;
 use Cake\Network\Exception\MethodNotAllowedException;
 use Cake\Routing\Router;
+use Cake\Utility\Security;
+use claviska\SimpleImage;
+use FFMpeg\FFMpeg;
+use FFMpeg\Format\Video\X264;
 
 /**
  * @property MediaTable Media
+ * @property MediaHandlerComponent MediaHandler
  */
 class MediaController extends AppController
 {
@@ -36,23 +42,8 @@ class MediaController extends AppController
 
     public function add()
     {
-        $_allowedMedias = [
-            'image/jpeg',
-            'image/jpg',
-            'image/png',
-            'image/gif',
-            'video/mpeg',
-            'video/mp4',
-            'audio/mpeg',
-            'audio/ogg',
-            'video/ogg',
-            'audio/webm',
-            'audio/x-wav',
-            'audio/wav',
-            'video/webm',
-            'audio/midi',
-            'audio/mid',
-        ];
+
+        $this->loadComponent('MediaHandler');
 
         $tempMediaCookie = null;
 
@@ -67,18 +58,38 @@ class MediaController extends AppController
 
                     $media = $this->Media->newEntity();
                     $media->name = pathinfo($files[$key]['name'], PATHINFO_FILENAME);
+                    $media->filename = bin2hex(Security::randomBytes(8));
                     $media->extension = pathinfo($files[$key]['name'], PATHINFO_EXTENSION);
-                    $media->size = pathinfo($files[$key]['size']);
+                    $media->size = $files[$key]['size'];
                     $media->post_id = null;
-                    $media->user_id = (is_null($this->Auth->user('id'))) ? $this->Auth->user('id') : null;
+                    $media->user_id = (!is_null($this->Auth->user('id'))) ? $this->Auth->user('id') : null;
                     $media->content_type = trim(shell_exec('file --brief --mime-type ' . escapeshellarg($files[$key]['tmp_name'])));
 
-                    if(!in_array($media->content_type, $_allowedMedias)) {
-                        array_push($_deniedMedias, $media);
+                    if($this->MediaHandler->isMediaAllowed($media) && !$this->MediaHandler->isMediaTooBig($media)) {
+
+                        $tmpFile = $files[$key]['tmp_name'];
+
+                        if($this->Media->save($media)) {
+                            switch ($media->extension) {
+
+                                case preg_match("/mp3|webm|wav/", $media->extension) ? true : false:
+                                    $this->MediaHandler->processAudio($media, $tmpFile);
+                                    break;
+                                case preg_match("/png|jpeg|jpg|gif/", $media->extension) ? true : false:
+                                    $this->MediaHandler->processImage($media, $tmpFile);
+                                    break;
+                                case preg_match("/mp4|mpeg|webm/", $media->extension) ? true : false:
+                                    $this->MediaHandler->processVideo($media, $tmpFile);
+                                    break;
+                            }
+                        }
+
+                        array_push($_acceptedMedias, $media);
                     }
                     else
                     {
-                        array_push($_acceptedMedias, $media);
+                        $media->reason = __('Invalid type or file is too big');
+                        array_push($_deniedMedias, $media);
                     }
 
 

@@ -8,6 +8,7 @@ use Cake\ORM\Entity;
  *
  * @property string $id
  * @property string $name
+ * @property string $filename
  * @property string $content_type
  * @property int $size
  * @property string $extension
@@ -31,8 +32,8 @@ class Media extends Entity
      * @var array
      */
     protected $_accessible = [
-        'id' => true,
         'name' => true,
+        'filename' => true,
         'content_type' => true,
         'size' => true,
         'extension' => true,

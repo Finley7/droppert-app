@@ -3,6 +3,7 @@ let _files = [];
 $(function() {
     // I might not need jquery. Oh no wait, Foundation does.
     $(document).foundation();
+    $('.loader').hide();
     ready();
 });
 
@@ -41,14 +42,10 @@ handleSelect = (event) => {
         'video/mpeg',
         'video/mp4',
         'audio/mpeg',
-        'audio/ogg',
-        'video/ogg',
         'audio/webm',
         'audio/x-wav',
         'audio/wav',
         'video/webm',
-        'audio/midi',
-        'audio/mid',
     ]
 
     $('.preview-medias').html('');
@@ -87,63 +84,85 @@ bytify = (bytes, precision) => {
 uploadFiles = (event) => {
     event.preventDefault();
 
-    $('#upload-button').attr('disabled', true);
-    $('#upload-button').val('...');
+    if(_files.length > 0) {
 
+        $('#upload-button').attr('disabled', true);
+        $('#upload-button').val('...');
 
-    let form = $('#upload-files-form');
-    let formData = new FormData();
+        $('#upload-modal-body').hide();
+        $('.loader').show();
 
-    $.each($('#upload-files-form input'), (key, input) => {
-        formData.append($(input).attr('name'), $(input).attr('value'));
-    });
+        let form = $('#upload-files-form');
+        let formData = new FormData();
 
-    $.each(_files, (key, file) => {
-        formData.append('file_' + key, file);
-    });
+        $.each($('#upload-files-form input'), (key, input) => {
+            formData.append($(input).attr('name'), $(input).attr('value'));
+        });
 
-    let request = $.ajax({
-        'url': $('#upload-files-form').attr('action'),
-        'data': formData,
-        'processData': false,
-        'contentType': false,
-        'type': 'POST',
-        'dataType': 'JSON',
-        'success': (response) => {
-            $.each(response.uploaded, (key, uploadedFile) => {
+        $.each(_files, (key, file) => {
+            formData.append('file_' + key, file);
+        });
 
-                $.each(_files, (key, file) => {
+        let request = $.ajax({
+            'url': $('#upload-files-form').attr('action'),
+            'data': formData,
+            'processData': false,
+            'contentType': false,
+            'type': 'POST',
+            'dataType': 'JSON',
+            'success': (response) => {
+                $.each(response.uploaded, (key, uploadedFile) => {
 
-                    if(file.name == uploadedFile.name + '.' + uploadedFile.extension) {
-                        $('.preview-medias').html('').append('<li style="color:#088A08"><i class="fa fa-check"></i> '+ file.name +'</li>');
-                    }
+                    $.each(_files, (key, file) => {
 
-                });
+                        if (file.name == uploadedFile.name + '.' + uploadedFile.extension) {
+                            $('.preview-medias').html('').append('<li style="color:#088A08"><i class="fa fa-check"></i> ' + file.name + '</li>');
+                        }
 
-            });
-
-            $.each(response.denied, (key, deniedFile) => {
-
-                $.each(_files, (key, file) => {
-
-                    if(file.name == deniedFile.name + '.' + deniedFile.extension) {
-                        $('.preview-medias').html('').append('<li style="color:tomato"><i class="fa fa-times"></i> '+ file.name +'</li>');
-                    }
+                    });
 
                 });
 
-            });
+                $.each(response.denied, (key, deniedFile) => {
 
-            if(response.uploaded.length > 0) {
-                $('#upload-button').remove();
-                $('#upload-button-group').append('<a href="'+ response.action +'" class="success button">Volgende</a>');
+                    $.each(_files, (key, file) => {
+
+                        if (file.name == deniedFile.name + '.' + deniedFile.extension) {
+                            $('.denied-medias').html('').append('<li style="color:tomato"><i class="fa fa-times"></i> ' + file.name + ' ~ ' + deniedFile.reason +'</li>');
+
+                            $('#upload-modal-body').show();
+                            $('.loader').hide();
+
+                            if(response.uploaded.length < 1) {
+
+                                $('#upload-button').attr('disabled', false);
+                                $('#upload-button').val('Upload');
+                            }
+                        }
+
+                    });
+
+                });
+
+                if (response.uploaded.length > 0) {
+                    $('#upload-modal-body').show();
+                    $('.loader').hide();
+                    $('#upload-input').remove();
+                    $('#upload-button').remove();
+                    $('#upload-button-group').append('<br><a href="' + response.action + '" class="success button expanded icon next">Volgende <i class="fa fa-arrow-right"></i></a>');
+                }
+            },
+            'error': (error) => {
+                console.log(error);
+
+                alert(error.responseText);
+
+                $('#upload-modal-body').show();
+                $('.loader').hide();
+
+                $('#upload-button').attr('disabled', false);
+                $('#upload-button').val('Upload');
             }
-        },
-        'error': (error) => {
-            console.log(error);
-
-            $('#upload-button').attr('disabled', false);
-            $('#upload-button').val('Upload');
-        }
-    });
+        });
+    }
 }
