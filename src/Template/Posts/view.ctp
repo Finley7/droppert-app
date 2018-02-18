@@ -12,10 +12,10 @@
         <div class="media-section">
             <?php foreach ($post->media as $media): ?>
                 <?php if (preg_match('/png|jpeg|jpg|gif/', $media->extension)): ?>
-                    <img src="<?= $this->Url->build(['action' => 'media', $media->id]); ?>" title="<?= $media->name; ?>">
+                    <img src="<?= $this->Url->assetUrl("media/images/{$media->filename}.png"); ?>" title="<?= $media->name; ?>">
                 <?php elseif (preg_match('/mp4|webm/', $media->extension)): ?>
                     <video controls preload poster="<?= $this->Url->assetUrl("media/thumbnails/thumb_{$media->filename}.png"); ?>">
-                        <source src="<?= $this->Url->build(['action' => 'media', $media->id]); ?>" type="video/mp4">
+                        <source src="<?= $this->Url->assetUrl("media/videos/mp4/{$media->filename}.mp4"); ?>" type="video/mp4">
                     </video>
                 <?php endif; ?>
             <?php endforeach; ?>

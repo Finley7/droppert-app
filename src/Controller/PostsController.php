@@ -96,52 +96,52 @@ class PostsController extends AppController
 
     }
 
-    public function media($id){
-
-        // Receive media from table
-        $media = $this->Posts->Media->get($id);
-
-
-        // Check if body has been set in cache
-        if(!($body = Cache::read('media' . '-' . $media->extension . '-' . $media->id))) {
-
-            // Load file based on media.
-            switch ($media->extension) {
-
-                case (preg_match('/mp4/', $media->extension)) ? true : false:
-                    $file = new File(WWW_ROOT . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4', false);
-                break;
-
-                case (preg_match('/mp3/', $media->extension)) ? true : false:
-                    $file = new File(WWW_ROOT . 'media' . DS . 'audio' . DS . $media->filename . '.mp3', false);
-                break;
-
-                case (preg_match('/png|jpg|jpeg|gif/', $media->extension)) ? true : false:
-                    $file = new File(WWW_ROOT . 'media' . DS . 'images' . DS . $media->filename . '.png', false);
-                break;
-            }
-
-            // Check if file exists, if it does, put it in body variable
-            // and create the cache key.
-            // Else show 404 error image.
-            if($file->exists()) {
-                $body = $file->read();
-                Cache::write('media' . '-' . $media->extension . '-' . $media->id, $body);
-            }
-            else
-            {
-                $file = new File(WWW_ROOT . 'media' . DS . 'not-found.png', false);
-                return $this->response
-                ->withStringBody($file->read())
-                ->withType('image/jpeg');
-            }
-
-        }
-
-        // Return body with content
-        return $this->response
-            ->withStringBody($body)
-            ->withType($media->content_type);
-
-    }
+//    public function media($id){
+//
+//        // Receive media from table
+//        $media = $this->Posts->Media->get($id);
+//
+//
+//        // Check if body has been set in cache
+//        if(!($body = Cache::read('media' . '-' . $media->extension . '-' . $media->id))) {
+//
+//            // Load file based on media.
+//            switch ($media->extension) {
+//
+//                case (preg_match('/mp4/', $media->extension)) ? true : false:
+//                    $file = new File(WWW_ROOT . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4', false);
+//                break;
+//
+//                case (preg_match('/mp3/', $media->extension)) ? true : false:
+//                    $file = new File(WWW_ROOT . 'media' . DS . 'audio' . DS . $media->filename . '.mp3', false);
+//                break;
+//
+//                case (preg_match('/png|jpg|jpeg|gif/', $media->extension)) ? true : false:
+//                    $file = new File(WWW_ROOT . 'media' . DS . 'images' . DS . $media->filename . '.png', false);
+//                break;
+//            }
+//
+//            // Check if file exists, if it does, put it in body variable
+//            // and create the cache key.
+//            // Else show 404 error image.
+//            if($file->exists()) {
+//                $body = $file->read();
+//                Cache::write('media' . '-' . $media->extension . '-' . $media->id, $body);
+//            }
+//            else
+//            {
+//                $file = new File(WWW_ROOT . 'media' . DS . 'not-found.png', false);
+//                return $this->response
+//                ->withStringBody($file->read())
+//                ->withType('image/jpeg');
+//            }
+//
+//        }
+//
+//        // Return body with content
+//        return $this->response
+//            ->withStringBody($body)
+//            ->withType($media->content_type);
+//
+//    }
 }
