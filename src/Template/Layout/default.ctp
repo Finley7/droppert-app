@@ -20,6 +20,7 @@ $this->Form->unlockField('media');
     <?= $this->Html->meta('icon') ?>
         <?= $this->Html->css([
             'foundation.min.css',
+            'videojs/video-js.min.css',
             'fontawesome-all.min.css',
             'app.css'
     ]) ?>
