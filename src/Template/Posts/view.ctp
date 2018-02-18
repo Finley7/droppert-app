@@ -184,8 +184,6 @@
         };
 
         xhr.send(formData);
-
-
     };
 
     (() => {
