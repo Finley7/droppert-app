@@ -107,22 +107,6 @@ mb_internal_encoding(Configure::read('App.encoding'));
 ini_set('intl.default_locale', Configure::read('App.defaultLocale'));
 
 /*
- * Set some PHP configurations for uploading larger files.
- */
-ini_set('memory_limit', '4G');
-ini_set('default_socket_timeout', 6000);
-ini_set('file_uploads', 'On');
-ini_set('upload_max_filesize', '4G');
-ini_set('post_max_size', '4G');
-ini_set('output_buffering', 4096);
-ini_set('max_execution_time', 1800);
-ini_set('max_input_time', 1800);
-ini_set('pfpro.defaulttimeout', 300);
-
-
-
-
-/*
  * Register application error and exception handlers.
  */
 $isCli = PHP_SAPI === 'cli';
