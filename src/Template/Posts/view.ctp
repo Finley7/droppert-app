@@ -19,7 +19,7 @@
                             <div class="video-content">
                                 <video
                                         data-setup="{fluid: true}"
-                                    <?= ($media == $post->media[0]) ? '' : ''; ?>
+                                    <?= ($media == $post->media[0]) ? 'autoplay' : ''; ?>
                                         controls
                                         class="video-js droppert-video vjs-big-play-centered vjs-16-9 "
                                         id="<?= $media->filename; ?>"
