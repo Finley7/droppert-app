@@ -157,17 +157,6 @@ $this->Form->unlockField('media');
                                     </div>
                                 <?php endif; ?>
                             </nav>
-
-
-
-<!--                            <ul class="menu navigation" style="float:right;">-->
-<!--                                <li>--><?//= $this->Html->link(__('Today\'s best'), ['controller' => 'posts', 'action' => 'index', 'prefix' => false]); ?><!--</li>-->
-<!--                                <li>--><?//= $this->Html->link(__('Alltime best'), ['controller' => 'posts', 'action' => 'index', 'prefix' => false]); ?><!--</li>-->
-<!--                            </ul>-->
-<!--                            <ul class="menu navigation">-->
-<!--                                <li>--><?//= $this->Html->link(__('Today\'s best'), ['controller' => 'posts', 'action' => 'index', 'prefix' => false]); ?><!--</li>-->
-<!--                                <li>--><?//= $this->Form->link(__('Alltime best'), ['controller' => 'posts', 'action' => 'index', 'prefix' => false]); ?><!--</li>-->
-<!--                            </ul>-->
                             <?= $this->fetch('content') ?>
                         </div>
                     </div>
