@@ -44,6 +44,9 @@ return [
         'dir' => 'src',
         'webroot' => 'webroot',
         'wwwRoot' => WWW_ROOT,
+        'registration' => true,
+        'user_role' => 1,
+        'ajax_role' => 2,
         // 'baseUrl' => env('SCRIPT_NAME'),
         'fullBaseUrl' => false,
         'imageBaseUrl' => 'img/',
@@ -57,6 +60,34 @@ return [
     ],
 
     /**
+     * Locations of the FFMPeg & FFProbe encoders
+     */
+    'FFMpeg' => [
+        'ffmpeg' => '/usr/local/bin/ffmpeg',
+        'ffprobe' => '/usr/local/bin/ffprobe'
+    ],
+
+    /**
+     * Allowed content-types
+     */
+    'Files' => [
+        'max_uploadsize' => 17179869184, # Aprox 2GB
+        'allowed_content_types' => [
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'image/gif',
+            'video/mpeg',
+            'video/mp4',
+            'audio/mpeg',
+            'audio/webm',
+            'audio/x-wav',
+            'audio/wav',
+            'video/webm',
+        ]
+    ],
+
+    /**
      * Security and encryption configuration
      *
      * - salt - A random string used in security hashing methods.
@@ -65,6 +96,8 @@ return [
      */
     'Security' => [
         'salt' => env('SECURITY_SALT', '__SALT__'),
+        'cookieKey' => env('SECURITY_COOKIE_KEY', '__SALT__')
+
     ],
 
     /**
@@ -353,5 +386,6 @@ return [
      */
     'Session' => [
         'defaults' => 'php',
+        'cookie' => 'droppert'
     ],
 ];
