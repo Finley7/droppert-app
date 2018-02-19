@@ -145,6 +145,7 @@ class MediaHandlerComponent extends Component
             ->frame(TimeCode::fromSeconds(1))
             ->save(WWW_ROOT . DS . 'media' . DS . 'thumbnails' . DS . 'thumb_' . $media->filename . '.png');
 
+        //TODO: bug for webm files and other.
         switch ($media->extension) {
 
             case 'mp4':
@@ -153,12 +154,12 @@ class MediaHandlerComponent extends Component
                 break;
 
             case 'webm':
-                $video->save(new X264('libmp3lame', 'libx264'), WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
+                $video->save(new X264(), WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
                 break;
 
             default:
                 $video
-                    ->save(new X264('libmp3lame', 'libx264'), WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
+                    ->save(new X264(), WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
                 break;
         }
 
