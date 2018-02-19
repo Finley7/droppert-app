@@ -153,10 +153,8 @@ class MediaHandlerComponent extends Component
                 break;
 
             case 'webm':
-                $format = new X264('libmp3lame', 'libx264');
-
-                $video
-                    ->save($format, WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
+                $video->save(new X264('libmp3lame', 'libx264'), WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
+                break;
 
             default:
                 $video
