@@ -23,6 +23,7 @@
                                     class="video-js droppert-video vjs-big-play-centered vjs-16-9 "
                                     id="<?= $media->filename; ?>"
                                     preload="auto"
+                                    <?= ($media->extension == 'webm') ? 'loop' : ''; ?>
                                     poster="<?= $this->Url->assetUrl("media/thumbnails/thumb_{$media->filename}.png"); ?>"
                             >
                                 <source src="<?= $this->Url->assetUrl("media/videos/mp4/{$media->filename}.mp4"); ?>"

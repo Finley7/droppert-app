@@ -69,10 +69,11 @@ class MediaController extends AppController
 
                         $tmpFile = $files[$key]['tmp_name'];
 
+
                         if($this->Media->save($media)) {
                             switch ($media->extension) {
 
-                                case preg_match("/mp3|webm|wav/", $media->extension) ? true : false:
+                                case preg_match("/mp3|wav/", $media->extension) ? true : false:
                                     $this->MediaHandler->processAudio($media, $tmpFile);
                                     break;
                                 case preg_match("/png|jpeg|jpg|gif/", $media->extension) ? true : false:

@@ -154,20 +154,16 @@ class MediaHandlerComponent extends Component
 
             case 'webm':
 
-                $cmd = WWW_ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension;
-                $export = WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4';
-                shell_exec("ffmpeg -i {$cmd} {$export}");
+                $format = new X264();
 
-
-//                $format = new X264('libmp3lame', 'libx264');
-//
-//                $video
-//                    ->save($format, WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
+                $video
+                    ->save($format, WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
                 break;
             default:
-                $cmd = WWW_ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension;
-                $export = WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4';
-                shell_exec("ffmpeg -i {$cmd} {$export}");
+                $format = new X264();
+
+                $video
+                    ->save($format, WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
 
                 break;
         }
