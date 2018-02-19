@@ -95,4 +95,10 @@ fabric.properties
 
 .github/
 
+webroot/media/audio/*
+webroot/media/images/*
+webroot/media/raw/*
+webroot/media/thumbnails/*
+webroot/media/videos/mp4/*
+
 # End of https://www.gitignore.io/api/cakephp,phpstorm

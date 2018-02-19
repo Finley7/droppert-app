@@ -155,7 +155,7 @@ uploadFiles = (event) => {
             'error': (error) => {
                 console.log(error);
 
-                alert(error.responseText);
+                alert('Er is iets fout gegaan. Probeer het later opnieuw!');
 
                 $('#upload-modal-body').show();
                 $('.loader').hide();
