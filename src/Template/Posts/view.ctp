@@ -20,6 +20,7 @@
                                     data-setup="{fluid: true}"
                                 <?= ($media == $post->media[0]) ? 'autoplay' : ''; ?>
                                     controls
+                                    <?= ($media->extension == 'webm') ? 'loop' : ''; ?>
                                     class="video-js droppert-video vjs-big-play-centered vjs-16-9 "
                                     id="<?= $media->filename; ?>"
                                     preload="auto"
