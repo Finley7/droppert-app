@@ -59,11 +59,12 @@ class MediaController extends AppController
                     $media = $this->Media->newEntity();
                     $media->name = pathinfo($files[$key]['name'], PATHINFO_FILENAME);
                     $media->filename = bin2hex(Security::randomBytes(8));
-                    $media->extension = strtolower(pathinfo($files[$key]['name'], PATHINFO_EXTENSION));
                     $media->size = $files[$key]['size'];
                     $media->post_id = null;
                     $media->user_id = (!is_null($this->Auth->user('id'))) ? $this->Auth->user('id') : null;
                     $media->content_type = trim(shell_exec('file --brief --mime-type ' . escapeshellarg($files[$key]['tmp_name'])));
+
+                    $media->extension = ($media->content_type == 'video/mp4' && strtolower(pathinfo($files[$key]['name'], PATHINFO_EXTENSION)) == 'gif') ? 'webm' : strtolower(pathinfo($files[$key]['name'], PATHINFO_EXTENSION));
 
                     if($this->MediaHandler->isMediaAllowed($media) && !$this->MediaHandler->isMediaTooBig($media)) {
 
