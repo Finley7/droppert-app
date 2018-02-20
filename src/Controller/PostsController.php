@@ -14,6 +14,7 @@ use Cake\Error\FatalErrorException;
 use Cake\Event\Event;
 use Cake\Filesystem\File;
 use Cake\Filesystem\Folder;
+use Cake\ORM\Query;
 use Cake\Routing\Router;
 use Cake\Utility\Text;
 
@@ -88,11 +89,39 @@ class PostsController extends AppController
 
     public function view($id = null, $slug = null) {
 
-        $post = $this->Posts->get($id, ['contain' => ['Replies', 'Ratings', 'Media']]);
+        $post = $this->Posts->get($id, [
+            'contain' => [
+                'Replies' => function(Query $q) {
+                        return $q
+                            ->contain(['Users'])
+                            ->orderDesc('Replies.created');
+                    }
+                ,
+                'Ratings', 'Media']
+        ]);
+        $reply = $this->Posts->Replies->newEntity();
+
+        if($this->request->is(['post', 'patch', 'put'])) {
+
+            $reply = $this->Posts->Replies->patchEntity($reply, $this->request->getData());
+
+            $reply->post_id = $post->id;
+            $reply->user_id = $this->Auth->user('id');
+
+            if($this->Posts->Replies->save($reply)) {
+                $this->Flash->success(__('Yay, your reply has been posted'));
+                return $this->redirect(['action' => 'view', $post->id, $post->slug]);
+            }
+            else
+            {
+                $this->Flash->error(__('Something went wrong while submitting your reply'));
+            }
+
+        }
 
         $tags = explode(',', $post->tags);
 
-        $this->set(compact(['post', 'tags']));
+        $this->set(compact(['post', 'tags', 'reply']));
 
     }
 

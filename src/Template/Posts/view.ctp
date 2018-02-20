@@ -3,6 +3,7 @@
  * @var \Cake\View\View $this
  * @var \App\Model\Entity\User $user
  * @var \App\Model\Entity\Post $post
+ * @var \App\Model\Entity\Reply $reply
  */
 ?>
 
@@ -98,6 +99,35 @@
 
         </div>
 
+    </div>
+    <div class="grid-x">
+        <div class="cell">
+            <section class="replies">
+                <h6 class="title"><?= __('Reply to this post'); ?></h6>
+                <?php if(isset($user->id)): ?>
+                    <?= $this->Form->create($reply); ?>
+                        <div class="form-group">
+                            <?= $this->Form->control('body', ['rows' => 2]); ?>
+                        </div>
+                        <div class="form-group">
+                            <?= $this->Form->button(__('Post it'), ['class' => 'default button']); ?>
+                        </div>
+                    <?= $this->Form->end(); ?>
+                <?php endif; ?>
+                <hr>
+                <?php foreach($post->replies as $reply): ?>
+                    <?php if(!$reply->deleted): ?>
+                        <div class="reply">
+                            <div class="reply-info">
+                                <?= __('{0} replied on {1}', $reply->user->username, $reply->created->nice());?>
+                            </div>
+                            <p><?= $reply->body; ?></p>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </section>
+
+        </div>
     </div>
 </div>
 

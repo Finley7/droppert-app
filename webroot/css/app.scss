@@ -239,3 +239,28 @@ input[type=number] {
     width: 100%!important;
     max-width: 810px;
 }
+.replies {
+    padding: 10px;
+
+    .title {
+        font-weight: 900;
+    }
+
+    .reply {
+
+        border: 2px dashed #aaa;
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 0;
+
+        .reply-info {
+            font-size: 11px;
+            color: #666;
+        }
+
+        p {
+            margin:0;
+            padding:0;
+        }
+    }
+}

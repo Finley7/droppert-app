@@ -56,10 +56,9 @@ class RatingsController extends AppController
 
             if($this->Ratings->save($rating)) {
 
-                $ratings = $this->Ratings->findByPostId($post->id);
+                $nays = $this->_getNays($post->id);
+                $yays = $this->_getYays($post->id);
 
-                $yays = Number::format($ratings->where(['type' => 'YAY'])->count());
-                $nays = Number::format($ratings->where(['type' => 'NAY'])->count());
 
                 $response = [
                     'yays' => $yays,
@@ -84,8 +83,8 @@ class RatingsController extends AppController
 
             $ratings = $this->Ratings->findByPostId($postId);
 
-            $yays = Number::format($ratings->where(['type' => 'YAY'])->count());
-            $nays = Number::format($ratings->where(['type' => 'NAY'])->count());
+            $nays = $this->_getNays($postId);
+            $yays = $this->_getYays($postId);
 
             $response = [
                 'yays' => $yays,
@@ -96,5 +95,12 @@ class RatingsController extends AppController
         $this->set(compact('response'));
         $this->set('_serialize', ['response']);
 
+    }
+
+    protected function _getNays($postId) {
+        return $this->Ratings->findByPostId($postId)->where(['type' => 'NAY'])->count();
+    }
+    protected function _getYays($postId) {
+        return $this->Ratings->findByPostId($postId)->where(['type' => 'YAY'])->count();
     }
 }
