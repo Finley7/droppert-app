@@ -103,17 +103,16 @@ class MediaHandlerComponent extends Component
         }
         else
         {
-            try {
-            $image = (new SimpleImage())
-                ->fromFile(WWW_ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension)
-                ->autoOrient()
-                ->bestFit(600, 600)
-                ->overlay($this->_watermarkPath, 'bottom right')
-                ->toFile(WWW_ROOT . DS . 'media' . DS . 'images' . DS . $media->filename . '.' . $media->extension, $media->content_type, 70);
-            }
-            catch(\Exception $e) {
-                die($e->getMessage());
-            }
+            $video = $this->_ffmpeg->open(WWW_ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension);
+
+            $video->filters()
+                ->watermark($this->_watermarkPath, [
+                    'position' => 'relative',
+                    'bottom' => 1,
+                    'right' => 1
+                ])->synchronize();
+
+            $video->save(new X264(), WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
         }
 
         try {

@@ -10,17 +10,17 @@
     <div class="card-body" style="background: #ddd;">
         <div class="media-section">
             <?php foreach ($post->media as $media): ?>
-                <?php if (preg_match('/png|jpeg|jpg|gif/', $media->extension)): ?>
+                <?php if (preg_match('/png|jpeg|jpg/', $media->extension)): ?>
                     <img src="<?= $this->Url->assetUrl("media/images/{$media->filename}.png"); ?>"
                          title="<?= $media->name; ?>">
-                <?php elseif (preg_match('/mp4|webm/', $media->extension)): ?>
+                <?php elseif (preg_match('/mp4|webm|gif/', $media->extension)): ?>
                     <div class="video-wrapper">
                         <div class="video-content">
                             <video
                                     data-setup="{fluid: true}"
                                 <?= ($media == $post->media[0]) ? 'autoplay' : ''; ?>
-                                    controls
-                                    <?= ($media->extension == 'webm') ? 'loop' : ''; ?>
+                                    <?= ($media->extension != 'gif') ? 'controls' : ''; ?>
+                                    <?= ($media->extension == 'gif') ? 'loop' : ''; ?>
                                     class="video-js droppert-video vjs-big-play-centered vjs-16-9 "
                                     id="<?= $media->filename; ?>"
                                     preload="auto"
