@@ -14,6 +14,8 @@ use Cake\Error\FatalErrorException;
 use Cake\Event\Event;
 use Cake\Filesystem\File;
 use Cake\Filesystem\Folder;
+use Cake\Http\Cookie\Cookie;
+use Cake\Network\Exception\MethodNotAllowedException;
 use Cake\ORM\Query;
 use Cake\Routing\Router;
 use Cake\Utility\Text;
@@ -57,6 +59,10 @@ class PostsController extends AppController
 
                 $post = $this->Posts->patchEntity($post, $this->request->getData());
                 $post->user_id = $this->Auth->user('id');
+
+                if($this->request->getData()['nsfw'] && !$post->isNSFW()) {
+                    $post->tags .= ',nsfw';
+                }
 
                 // Handle all selected medias and put them in a query.
                 if ($this->Posts->save($post)) {
@@ -122,6 +128,36 @@ class PostsController extends AppController
         $tags = explode(',', $post->tags);
 
         $this->set(compact(['post', 'tags', 'reply']));
+
+    }
+
+    public function toggleNswf() {
+
+        if($this->request->is(['put', 'patch', 'post'])) {
+
+            if(!is_null($this->request->getCookie('site'))) {
+
+                $nswfSetting = json_decode(json_encode($this->request->getCookie('site')));
+                $nswfSetting->NSFW = !$nswfSetting->NSFW;
+
+                $cookie = (new Cookie('site'))
+                    ->withExpiry(new \DateTime('+1 year'))
+                    ->withHttpOnly(true)
+                    ->withPath('/')
+                    ->withValue(json_encode(['NSFW' => $nswfSetting->NSFW]));
+
+                $this->Flash->success(
+                    __('You are now seeing {0} NSFW content',
+                        ($nswfSetting->NSFW) ? '' : 'no' )
+                );
+
+                return $this->redirect($this->referer())->withCookie($cookie);
+
+            }
+
+        }
+
+        throw new MethodNotAllowedException();
 
     }
 

@@ -18,6 +18,7 @@ use App\Model\Table\SessionsTable;
 use App\Model\Table\UsersTable;
 use Cake\Controller\Controller;
 use Cake\Event\Event;
+use Cake\Http\Cookie\Cookie;
 use Cake\Routing\Router;
 
 /**
@@ -63,6 +64,23 @@ class AppController extends Controller
 
         $this->_checkUser();
         $this->_checkUnprocessedMedia();
+
+        if(is_null($this->request->getCookie('site'))) {
+            $siteSettingsCookie = (new Cookie('site'))
+                ->withExpiry(new \DateTime('+1 year'))
+                ->withHttpOnly(true)
+                ->withPath('/')
+                ->withValue(json_encode(['NSFW' => false]));
+
+            $this->response = $this->response->withCookie($siteSettingsCookie);
+            $this->set('nsfw', false);
+        }
+        else
+        {
+            $nswfOption = json_decode(json_encode($this->request->getCookie('site')));
+
+            $this->set('nsfw', $nswfOption->NSFW);
+        }
     }
 
     protected function _checkUser() {
@@ -81,7 +99,7 @@ class AppController extends Controller
             similar_text($userSession->user_agent, $_SERVER['HTTP_USER_AGENT'], $percentage);
 
             if ($percentage <= 20) {
-                $this->Cookie->delete('user');
+                $this->response = $this->response->withExpiredCookie('user');
                 $this->Auth->logout();
                 $this->Flash->error(__('Your session deviated too much from your user agent and that is why you have been logged out'));
             }
