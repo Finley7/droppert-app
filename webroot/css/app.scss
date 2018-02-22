@@ -264,3 +264,19 @@ input[type=number] {
         }
     }
 }
+
+.nsfw-button {
+    padding: 7px;
+    background: #fff;
+    border-radius: 3px;
+
+
+    .nsfw-label {
+        display: inline-block;
+        margin: 0 5px;
+
+        input {
+            margin: 5px;
+        }
+    }
+}

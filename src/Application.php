@@ -38,7 +38,7 @@ class Application extends BaseApplication
     public function middleware($middlewareQueue)
     {
         $encryptedCookies = new EncryptedCookieMiddleware([
-            'user', 'media',
+            'user', 'media', 'site',
         ], Configure::read('Security.cookieKey'));
 
         $middlewareQueue

@@ -7,6 +7,12 @@
 ?>
 <div class="grid-x">
     <?php foreach($posts as $post): ?>
+    <?php if(!$post->deleted) : ?>
+        <?php if(
+                ($post->isNSFW() && $nsfw == true) ||
+                (!$post->isNSFW() && $nsfw == true) ||
+                (!$post->isNSFW() && $nsfw == false)
+        ): ?>
         <div class="cell medium-4 large-4 small-12">
             <div class="post-preview">
                 <div class="media-object">
@@ -24,7 +30,8 @@
                     </div>
                 </div>
             </div>
-
         </div>
+        <?php endif; ?>
+    <?php endif; ?>
     <?php endforeach; ?>
 </div>
