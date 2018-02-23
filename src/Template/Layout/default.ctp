@@ -13,6 +13,7 @@ $this->Form->unlockField('media');
 <head>
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
     <title>
         Droppert ~
         <?= $this->fetch('title') ?>
