@@ -22,25 +22,38 @@
     </title>
     <?= $this->Html->meta('icon') ?>
 
-    <?= $this->Html->css('base.css') ?>
-    <?= $this->Html->css('cake.css') ?>
+    <?= $this->Html->css('foundation.min.css') ?>
+    <?= $this->Html->css('app.css') ?>
 
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
+    <style>
+        body, html {
+            margin: 20px;
+        }
+        .card-divider {
+            background: #333;
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
-    <div id="container">
-        <div id="header">
-            <h1><?= __('Error') ?></h1>
-        </div>
-        <div id="content">
-            <?= $this->Flash->render() ?>
+    <div class="grid-container">
+        <div class="card">
 
-            <?= $this->fetch('content') ?>
-        </div>
-        <div id="footer">
-            <?= $this->Html->link(__('Back'), 'javascript:history.back()') ?>
+
+            <div class="card-divider">
+                <h4><?= __('Error') ?></h4>
+            </div>
+            <div class="card-section">
+                <?= $this->Flash->render() ?>
+
+                <?= $this->fetch('content') ?>
+            </div>
+            <div class="card-divider">
+                <?= $this->Html->link(__('Back'), 'javascript:history.back()', ['class' => 'button']) ?>
+            </div>
         </div>
     </div>
 </body>
