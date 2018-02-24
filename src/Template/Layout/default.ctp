@@ -29,6 +29,7 @@ $this->Form->unlockField('media');
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
+
 </head>
 <body>
 <div class="reveal" id="uploadModal" data-reveal data-close-on-click="false">
