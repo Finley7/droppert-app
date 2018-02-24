@@ -127,7 +127,10 @@ class PostsController extends AppController
 
         $tags = explode(',', $post->tags);
 
-        $this->set(compact(['post', 'tags', 'reply']));
+        $this
+            ->viewBuilder()->setLayout('view-post');
+        $this
+            ->set(compact(['post', 'tags', 'reply']));
 
     }
 
