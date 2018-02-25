@@ -55,6 +55,11 @@
             <div class="cell medium-5 large-5 small-12">
                 <div class="yaynay-box">
                     <div class="button-group" style="text-align:center;">
+                        <?php if($user->hasRole('admin') && !$post->deleted) : ?>
+                        <?= $this->Form->postButton('<i class="fa fa-trash"></i>', ['controller' => 'Posts', 'action' => 'delete', 'prefix' => 'admin', $post->id], ['class' => 'alert button']); ?>
+                        <?php else: ?>
+                            <?= $this->Form->postButton('<i class="fa fa-redo"></i>', ['controller' => 'Posts', 'action' => 'recover', 'prefix' => 'admin', $post->id], ['class' => 'warning button']); ?>
+                        <?php endif; ?>
                         <?= $this->Form->create(null, [
                             'id' => 'yayForm',
                             'onsubmit' => 'ratePost(event, \'yay\')',
@@ -120,6 +125,9 @@
                         <div class="reply">
                             <div class="reply-info">
                                 <?= __('{0} replied on {1}', $reply->user->username, $reply->created->nice());?>
+                                <?php if($user->hasRole('admin')) : ?>
+                                    <?= $this->Form->postLink('(delete)', ['controller' => 'Replies', 'action' => 'delete', 'prefix' => 'admin', $reply->id]); ?>
+                                <?php endif; ?>
                             </div>
                             <p><?= $reply->body; ?></p>
                         </div>

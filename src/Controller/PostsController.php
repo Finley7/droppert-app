@@ -7,6 +7,7 @@
  */
 
 namespace App\Controller;
+use App\Model\Entity\User;
 use App\Model\Table\MediaTable;
 use App\Model\Table\PostsTable;
 use Cake\Cache\Cache;
@@ -16,6 +17,7 @@ use Cake\Filesystem\File;
 use Cake\Filesystem\Folder;
 use Cake\Http\Cookie\Cookie;
 use Cake\Network\Exception\MethodNotAllowedException;
+use Cake\Network\Exception\NotFoundException;
 use Cake\ORM\Query;
 use Cake\Routing\Router;
 use Cake\Utility\Text;
@@ -105,6 +107,15 @@ class PostsController extends AppController
                 ,
                 'Ratings', 'Media']
         ]);
+
+        if($post->deleted && !(new User($this->Auth->user()))->hasRole('admin')) {
+            throw new NotFoundException();
+        }
+
+        if($post->deleted && (new User($this->Auth->user()))->hasRole('admin')) {
+            $this->Flash->error(__('You are watching a deleted post'));
+        }
+
         $reply = $this->Posts->Replies->newEntity();
 
         if($this->request->is(['post', 'patch', 'put'])) {
@@ -133,6 +144,18 @@ class PostsController extends AppController
             ->set(compact(['post', 'tags', 'reply']));
 
     }
+
+//    public function alltime() {
+//
+//
+//        $rating = $this->Posts->Ratings->find('all')
+//            ->where(['type' => 'YAY']);
+//
+//
+//        $this->viewBuilder()->setTemplate('index');
+//        $this->set(compact(['rating']));
+//
+//    }
 
     public function toggleNswf() {
 
