@@ -21,7 +21,6 @@ $this->Form->unlockField('media');
     <?= $this->Html->meta('icon') ?>
         <?= $this->Html->css([
             'foundation.min.css',
-            'videojs/video-js.min.css',
             'fontawesome-all.min.css',
             'app.css'
     ]) ?>
@@ -112,7 +111,7 @@ $this->Form->unlockField('media');
                                 <!-- Left Nav Section -->
                                 <div class="top-bar-left">
                                     <ul class="vertical medium-horizontal menu">
-                                        <li><?= $this->Html->link(__('Today\'s best'), ['controller' => 'posts', 'action' => 'index', 'prefix' => false]); ?></li>
+                                        <li><?= $this->Html->link(__('Uploaded today'), ['controller' => 'posts', 'action' => 'index', 'prefix' => false]); ?></li>
                                         <li><?= $this->Html->link(__('Alltime best'), ['controller' => 'posts', 'action' => 'index', 'prefix' => false]); ?></li>
                                     </ul>
                                 </div>
