@@ -68,13 +68,14 @@ class FaultyMediaShell extends Shell
 
                     $this->success(__('Deleted entity {0}', $media->id));
 
-                    if($file->delete()) {
-                        $this->success(__('Deleted file {0}', $media->filename . '.' . $media->extension));
-                        $this->out('-------');
+                    if($file->exists()) {
+                        if ($file->delete()) {
+                            $this->success(__('Deleted file {0}', $media->filename . '.' . $media->extension));
+                            $this->out('-------');
+                        }
                     }
-                    else
-                    {
-                        $this->err(__('Did not delete local file'));
+                    else {
+                        $this->err(__('Media file {0} does not exists', $media->filename . '.' . $media->extension));
                         $this->out('--------');
                     }
                 }
