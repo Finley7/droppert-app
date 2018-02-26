@@ -47,6 +47,7 @@ return [
         'registration' => true,
         'user_role' => 1,
         'ajax_role' => 2,
+        'ban_role' => 4,
         // 'baseUrl' => env('SCRIPT_NAME'),
         'fullBaseUrl' => false,
         'imageBaseUrl' => 'img/',

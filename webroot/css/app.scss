@@ -146,6 +146,9 @@ input[type=number] {
 .icon.upload::before {
     content: '\f093';
 }
+.icon.delete::before {
+    content: '\093';
+}
 
 
 .success.button {

@@ -14,11 +14,14 @@
  */
 namespace App\Controller;
 
+use App\Model\Table\BlockedIpsTable;
 use App\Model\Table\SessionsTable;
 use App\Model\Table\UsersTable;
 use Cake\Controller\Controller;
+use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\Http\Cookie\Cookie;
+use Cake\Network\Exception\MethodNotAllowedException;
 use Cake\Routing\Router;
 
 /**
@@ -29,6 +32,7 @@ use Cake\Routing\Router;
  *
  * @property SessionsTable Sessions
  * @property UsersTable Users
+ * @property BlockedIpsTable BlockedIps
  * @link https://book.cakephp.org/3.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller
@@ -64,6 +68,7 @@ class AppController extends Controller
 
         $this->_checkUser();
         $this->_checkUnprocessedMedia();
+        $this->_checkIpBlocks();
 
         if(is_null($this->request->getCookie('site'))) {
             $siteSettingsCookie = (new Cookie('site'))
@@ -106,6 +111,11 @@ class AppController extends Controller
 
             $user = $this->Users->get($userSession->user_id);
 
+            if($user->primary_role == Configure::read('App.ban_role'))
+            {
+                throw new MethodNotAllowedException(__('You have been blocked'));
+            }
+
             $this->Auth->setUser($user->toArray());
             $this->set('user', $user);
         }
@@ -130,6 +140,19 @@ class AppController extends Controller
                 $this->set('unprocessedMedia', true);
             };
 
+        }
+    }
+
+    protected function _checkIpBlocks() {
+        $this->loadModel('BlockedIps');
+
+        $blockCheck = $this->BlockedIps->find('all')
+            ->where(['ip_address' => $_SERVER['REMOTE_ADDR']]);
+
+        if($blockCheck->count() > 0) {
+            throw new MethodNotAllowedException(
+                __('You have been banned for the following reason: {0}', $blockCheck->first()->reason)
+            );
         }
     }
 }

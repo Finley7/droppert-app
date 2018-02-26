@@ -99,6 +99,7 @@ class PostsController extends AppController
 
         $post = $this->Posts->get($id, [
             'contain' => [
+                'Users',
                 'Replies' => function(Query $q) {
                         return $q
                             ->contain(['Users'])
