@@ -187,6 +187,11 @@ $this->Form->unlockField('media');
                 </div>
             </div>
         </div>
+        <div class="cell content">
+            <footer class="text-center" style="color: #555;padding: 5px; font-size:11px;background: #ccc;">
+                Copyright &copy; FHD 2018. Alle rechten voorbehouden ~ Sponsored by Stefan
+            </footer>
+        </div>
     </div>
 
 
