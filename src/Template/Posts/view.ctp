@@ -41,25 +41,63 @@
                 <?php endif; ?>
             <?php endforeach; ?>
         </div>
-
+        <p><?= $post->created->nice(); ?><//p>
         <hr>
         <div class="grid-x">
             <div class="cell medium-7 large-7 small-12">
                 <h6 class="post-title"><?= $post->title; ?></h6>
                 <?= $this->Text->autoParagraph($post->description); ?>
-                <br>
+
                 <?php foreach ($tags as $tag): ?>
-                    <?= $this->Html->link($tag, ['action' => 'tag', \Cake\Utility\Text::slug($tag)]); ?>
+                    <?= $this->Html->link($tag, ['action' => 'tag', \Cake\Utility\Text::slug($tag)]); ?>,
                 <?php endforeach; ?>
+                <br>
+
+                <?php if($user->hasRole('admin')): ?>
+                   <div class="label">
+                       <?= __('Uploaded by {0}', $post->user->username); ?>
+                   </div>
+                    <?= $this->Form->postLink('<i class="fa fa-ban"></i> ' . __('Purge'),
+                        [
+                            'controller' => 'Users',
+                            'action' => 'purge',
+                            'prefix' => 'admin',
+                            $post->user->id
+                        ],
+                        [
+                            'style' => 'background: red; color: #fff; padding: 5px; font-size: 11px;',
+                            'escape' => false,
+                            'confirm' => __('Are you sure you want to delete ALL users posts and permanently block this user?')
+                        ]);
+                    ?>
+                    <?= $this->Form->postLink('<i class="fa fa-user-times"></i> ' . __('Block user'),
+                        [
+                            'controller' => 'Users',
+                            'action' => 'block',
+                            'prefix' => 'admin',
+                            $post->user->id
+                        ],
+                        [
+                            'style' => 'background: tomato; color: #fff; padding: 5px; font-size: 11px;',
+                            'escape' => false,
+                            'confirm' => __('Are you sure you want to block this user?')
+                        ]);
+                    ?>
+                    <?php if($user->hasRole('admin') && !$post->deleted) : ?>
+                        <?= $this->Form->postLink('<i class="fa fa-trash"></i> ' . __('Delete post'),
+                            ['controller' => 'Posts', 'action' => 'delete', 'prefix' => 'admin', $post->id],
+                            ['style' => 'background: #D33C44; color: #fff; padding: 5px; font-size: 11px;', 'escape' => false]); ?>
+
+                    <?php else: ?>
+                        <?= $this->Form->postLink('<i class="fa fa-redo"></i> ' . __('Recover post'),
+                            ['controller' => 'Posts', 'action' => 'recover', 'prefix' => 'admin', $post->id],
+                            ['style' => 'background: orange; color: #fff; padding: 5px; font-size: 11px;', 'escape' => false]); ?>
+                    <?php endif; ?>
+                    <?php endif; ?>
             </div>
             <div class="cell medium-5 large-5 small-12">
                 <div class="yaynay-box">
                     <div class="button-group" style="text-align:center;">
-                        <?php if($user->hasRole('admin') && !$post->deleted) : ?>
-                        <?= $this->Form->postButton('<i class="fa fa-trash"></i>', ['controller' => 'Posts', 'action' => 'delete', 'prefix' => 'admin', $post->id], ['class' => 'alert button']); ?>
-                        <?php else: ?>
-                            <?= $this->Form->postButton('<i class="fa fa-redo"></i>', ['controller' => 'Posts', 'action' => 'recover', 'prefix' => 'admin', $post->id], ['class' => 'warning button']); ?>
-                        <?php endif; ?>
                         <?= $this->Form->create(null, [
                             'id' => 'yayForm',
                             'onsubmit' => 'ratePost(event, \'yay\')',
@@ -144,6 +182,7 @@
     _ = (element) => {
         return document.getElementById(element);
     };
+
 
     getRatings = () => {
 

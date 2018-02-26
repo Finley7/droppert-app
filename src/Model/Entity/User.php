@@ -56,10 +56,16 @@ class User extends Entity
     public function hasRole($roleName) {
 
         $rolesRegistry = TableRegistry::get('UsersRoles');
-        $_userRoles = $rolesRegistry->find('all', ['contain' => 'Roles'])->where(['user_id' => $this->id])->all();
+        $_userRoles = $rolesRegistry
+            ->find('all', ['contain' => 'Roles'])
+            ->where(['user_id' => $this->id])
+            ->select('Roles.name')->all();
 
         foreach($_userRoles as $role) {
-            return ($role->role->name == $roleName) ? true : false;
+
+            if($role->Roles->name == $roleName){
+                return true;
+            }
         }
 
     }

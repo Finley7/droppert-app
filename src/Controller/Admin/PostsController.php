@@ -11,6 +11,7 @@ namespace App\Controller\Admin;
 
 use App\Controller\AppController;
 use App\Model\Table\PostsTable;
+use Cake\Core\Configure;
 use Cake\Network\Exception\MethodNotAllowedException;
 
 /**
@@ -52,24 +53,22 @@ class PostsController extends AppController
      * @param $postId
      * @return \Cake\Http\Response|null
      */
-    public function recover($postId) {
-        if($this->request->is(['post', 'patch', 'put'])) {
+    public function recover($postId)
+    {
+        if ($this->request->is(['post', 'patch', 'put'])) {
 
             $post = $this->Posts->get($postId);
             $post->deleted = false;
 
-            if($this->Posts->save($post)) {
+            if ($this->Posts->save($post)) {
                 $this->Flash->success(__('The post has been recovered'));
                 return $this->redirect($this->referer());
-            }
-            else
-            {
+            } else {
                 $this->Flash->error(__('Something went wrong while recovering this post'));
                 return $this->redirect($this->referer());
             }
 
-        }
-        else {
+        } else {
             throw new MethodNotAllowedException();
         }
     }
