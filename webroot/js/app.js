@@ -153,15 +153,16 @@ uploadFiles = (event) => {
                 }
             },
             'error': (error) => {
-                console.log(error);
 
-                alert('Er is iets fout gegaan. Probeer het later opnieuw!');
+                alert('We konden dit bestand niet uploaden!');
 
-                $('#upload-modal-body').show();
+                $('#upload-modal-body').hide();
                 $('.loader').hide();
 
                 $('#upload-button').attr('disabled', false);
                 $('#upload-button').val('Upload');
+
+                window.reload();
             }
         });
     }
