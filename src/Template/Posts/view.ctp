@@ -157,6 +157,15 @@
                             <?= $this->Form->button(__('Post it'), ['class' => 'default button']); ?>
                         </div>
                     <?= $this->Form->end(); ?>
+                <?php else: ?>
+                    <div class="reply">
+                        <div class="reply-info">
+                            <?= $this->Html->link(__('Log in'), ['controller' => 'Users', 'action' => 'login']); ?>
+                            <?= __('or'); ?>
+                            <?= $this->Html->link(__('register'), ['controller' => 'Users', 'action' => 'register']); ?>
+                            <?= __('to reply to this post!'); ?>
+                        </div>
+                    </div>
                 <?php endif; ?>
                 <hr>
                 <?php foreach($post->replies as $reply): ?>
