@@ -155,6 +155,7 @@ uploadFiles = (event) => {
             'error': (error) => {
 
                 alert('We konden dit bestand niet uploaden!');
+                location.reload();
 
                 $('#upload-modal-body').hide();
                 $('.loader').hide();
@@ -162,7 +163,6 @@ uploadFiles = (event) => {
                 $('#upload-button').attr('disabled', false);
                 $('#upload-button').val('Upload');
 
-                window.reload();
             }
         });
     }
