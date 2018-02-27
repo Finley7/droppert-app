@@ -52,7 +52,7 @@
                     <?= $this->Html->link($tag, ['action' => 'tag', \Cake\Utility\Text::slug($tag)]); ?>,
                 <?php endforeach; ?>
                 <br>
-
+                <?php if(isset($user->id)): ?>
                 <?php if($user->hasRole('admin')): ?>
                    <div class="label">
                        <?= __('Uploaded by {0}', $post->user->username); ?>
@@ -94,6 +94,7 @@
                             ['style' => 'background: orange; color: #fff; padding: 5px; font-size: 11px;', 'escape' => false]); ?>
                     <?php endif; ?>
                     <?php endif; ?>
+                <?php endif; ?>
             </div>
             <div class="cell medium-5 large-5 small-12">
                 <div class="yaynay-box">
