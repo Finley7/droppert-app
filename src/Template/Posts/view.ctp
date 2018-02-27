@@ -164,7 +164,7 @@
                         <div class="reply">
                             <div class="reply-info">
                                 <?= __('{0} replied on {1}', $reply->user->username, $reply->created->nice());?>
-                                <?php if($user->hasRole('admin')) : ?>
+                                <?php if(isset($user->id) && $user->hasRole('admin')) : ?>
                                     <?= $this->Form->postLink('(delete)', ['controller' => 'Replies', 'action' => 'delete', 'prefix' => 'admin', $reply->id]); ?>
                                 <?php endif; ?>
                             </div>
