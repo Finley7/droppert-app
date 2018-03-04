@@ -35,7 +35,7 @@ class UsersController extends AppController
             $user = $this->Users->get($userId);
             $user->primary_role = Configure::read('App.ban_role');
 
-            $session = $this->Users->Sessions->get($this->request->getCookie('user'));
+            $session = $this->Users->Sessions->findByUserId($user->id)->orderDesc('created')->first();
             $blockedIp = $this->BlockedIps->newEntity();
             $blockedIp->ip_address = $session->ip_address;
             $blockedIp->reason = __('Your account has been purged');
