@@ -27,7 +27,7 @@
         </div>
 
         <div class="form-group">
-            <?= $this->Form->submit(__('Create account'), ['class' => 'btn btn-success']); ?>
+            <?= $this->Form->submit(__('Create account'), ['class' => 'success button']); ?>
         </div>
     </div>
 </div>

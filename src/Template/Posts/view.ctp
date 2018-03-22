@@ -3,6 +3,7 @@
  * @var \Cake\View\View $this
  * @var \App\Model\Entity\User $user
  * @var \App\Model\Entity\Post $post
+ * @var \App\Model\Entity\Reply $reply
  */
 ?>
 
@@ -10,16 +11,17 @@
     <div class="card-body" style="background: #ddd;">
         <div class="media-section">
             <?php foreach ($post->media as $media): ?>
-                <?php if (preg_match('/png|jpeg|jpg|gif/', $media->extension)): ?>
+                <?php if (preg_match('/png|jpeg|jpg/', $media->extension)): ?>
                     <img src="<?= $this->Url->assetUrl("media/images/{$media->filename}.png"); ?>"
                          title="<?= $media->name; ?>">
-                <?php elseif (preg_match('/mp4|webm/', $media->extension)): ?>
+                <?php elseif (preg_match('/mp4|webm|gif/', $media->extension)): ?>
                     <div class="video-wrapper">
                         <div class="video-content">
                             <video
                                     data-setup="{fluid: true}"
                                 <?= ($media == $post->media[0]) ? 'autoplay' : ''; ?>
-                                    controls
+                                    <?= ($media->extension != 'gif') ? 'controls' : ''; ?>
+                                    <?= ($media->extension == 'gif' || $media->extension == 'webm') ? 'loop' : ''; ?>
                                     class="video-js droppert-video vjs-big-play-centered vjs-16-9 "
                                     id="<?= $media->filename; ?>"
                                     preload="auto"
@@ -40,16 +42,60 @@
                 <?php endif; ?>
             <?php endforeach; ?>
         </div>
-
+        <p><?= $post->created->nice(); ?><//p>
         <hr>
         <div class="grid-x">
             <div class="cell medium-7 large-7 small-12">
                 <h6 class="post-title"><?= $post->title; ?></h6>
                 <?= $this->Text->autoParagraph($post->description); ?>
-                <br>
+
                 <?php foreach ($tags as $tag): ?>
-                    <?= $this->Html->link($tag, ['action' => 'tag', \Cake\Utility\Text::slug($tag)]); ?>
+                    <?= $this->Html->link($tag, ['action' => 'tag', \Cake\Utility\Text::slug($tag)]); ?>,
                 <?php endforeach; ?>
+                <br>
+                <?php if(isset($user->id)): ?>
+                <?php if($user->hasRole('admin')): ?>
+                   <div class="label">
+                       <?= __('Uploaded by {0}', $post->user->username); ?>
+                   </div>
+                    <?= $this->Form->postLink('<i class="fa fa-ban"></i> ' . __('Purge'),
+                        [
+                            'controller' => 'Users',
+                            'action' => 'purge',
+                            'prefix' => 'admin',
+                            $post->user->id
+                        ],
+                        [
+                            'style' => 'background: red; color: #fff; padding: 5px; font-size: 11px;',
+                            'escape' => false,
+                            'confirm' => __('Are you sure you want to delete ALL users posts and permanently block this user?')
+                        ]);
+                    ?>
+                    <?= $this->Form->postLink('<i class="fa fa-user-times"></i> ' . __('Block user'),
+                        [
+                            'controller' => 'Users',
+                            'action' => 'block',
+                            'prefix' => 'admin',
+                            $post->user->id
+                        ],
+                        [
+                            'style' => 'background: tomato; color: #fff; padding: 5px; font-size: 11px;',
+                            'escape' => false,
+                            'confirm' => __('Are you sure you want to block this user?')
+                        ]);
+                    ?>
+                    <?php if($user->hasRole('admin') && !$post->deleted) : ?>
+                        <?= $this->Form->postLink('<i class="fa fa-trash"></i> ' . __('Delete post'),
+                            ['controller' => 'Posts', 'action' => 'delete', 'prefix' => 'admin', $post->id],
+                            ['style' => 'background: #D33C44; color: #fff; padding: 5px; font-size: 11px;', 'escape' => false]); ?>
+
+                    <?php else: ?>
+                        <?= $this->Form->postLink('<i class="fa fa-redo"></i> ' . __('Recover post'),
+                            ['controller' => 'Posts', 'action' => 'recover', 'prefix' => 'admin', $post->id],
+                            ['style' => 'background: orange; color: #fff; padding: 5px; font-size: 11px;', 'escape' => false]); ?>
+                    <?php endif; ?>
+                    <?php endif; ?>
+                <?php endif; ?>
             </div>
             <div class="cell medium-5 large-5 small-12">
                 <div class="yaynay-box">
@@ -99,6 +145,47 @@
         </div>
 
     </div>
+    <div class="grid-x">
+        <div class="cell">
+            <section class="replies">
+                <h6 class="title"><?= __('Reply to this post'); ?></h6>
+                <?php if(isset($user->id)): ?>
+                    <?= $this->Form->create($reply); ?>
+                        <div class="form-group">
+                            <?= $this->Form->control('body', ['rows' => 2]); ?>
+                        </div>
+                        <div class="form-group">
+                            <?= $this->Form->button(__('Post it'), ['class' => 'default button']); ?>
+                        </div>
+                    <?= $this->Form->end(); ?>
+                <?php else: ?>
+                    <div class="reply">
+                        <div class="reply-info">
+                            <?= $this->Html->link(__('Log in'), ['controller' => 'Users', 'action' => 'login']); ?>
+                            <?= __('or'); ?>
+                            <?= $this->Html->link(__('register'), ['controller' => 'Users', 'action' => 'register']); ?>
+                            <?= __('to reply to this post!'); ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <hr>
+                <?php foreach($post->replies as $reply): ?>
+                    <?php if(!$reply->deleted): ?>
+                        <div class="reply">
+                            <div class="reply-info">
+                                <?= __('{0} replied on {1}', $reply->user->username, $reply->created->nice());?>
+                                <?php if(isset($user->id) && $user->hasRole('admin')) : ?>
+                                    <?= $this->Form->postLink('(delete)', ['controller' => 'Replies', 'action' => 'delete', 'prefix' => 'admin', $reply->id]); ?>
+                                <?php endif; ?>
+                            </div>
+                            <p><?= $reply->body; ?></p>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </section>
+
+        </div>
+    </div>
 </div>
 
 <?= $this->Html->script('videojs/video.min.js'); ?>
@@ -106,6 +193,7 @@
     _ = (element) => {
         return document.getElementById(element);
     };
+
 
     getRatings = () => {
 

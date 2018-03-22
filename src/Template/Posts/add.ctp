@@ -24,6 +24,14 @@ echo $this->Form->unlockField('media');
         </div>
         <hr>
         <div class="form-group">
+            <label for="nsfw">
+                <?= $this->Form->checkbox('nsfw'); ?>
+                <?= __('This post is NSFW (Not Safe For Work) or 18+'); ?>
+            </label>
+
+        </div>
+        <hr>
+        <div class="form-group">
             <label><?= __('Media that belongs to the post'); ?></label>
            <?php foreach($savedMedia as $media): ?>
                <label for="<?= $media['id']; ?>">

@@ -47,4 +47,19 @@ class Post extends Entity
         'ratings' => true,
         'replies' => true
     ];
+
+
+    /**
+     * Check if tag is NSFW
+     * @return bool
+     */
+    public function isNSFW() {
+        $tags = explode(',', $this->tags);
+
+        $_checkArray = ['nsfw', 'NSFW', ' nsfw', 'nsfw '];
+
+        return (array_intersect($tags, $_checkArray)) ? true : false;
+
+
+    }
 }

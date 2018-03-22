@@ -11,6 +11,7 @@ use App\Model\Table\UsersTable;
 use Cake\Core\Configure;
 use Cake\Http\Cookie\Cookie;
 use Cake\Network\Exception\MethodNotAllowedException;
+use Cake\Network\Exception\NotFoundException;
 use Cake\Routing\Router;
 
 
@@ -67,7 +68,7 @@ class UsersController extends AppController
 
                 return $this->response
                     ->withCookie($cookie)
-                    ->withLocation($this->Auth->redirectUrl());
+                    ->withLocation(Router::url(['controller' => 'Posts', 'action' => 'index']));
             }
 
             $this->Flash->error(__('We could not sign you in'));
@@ -133,5 +134,19 @@ class UsersController extends AppController
         }
 
         $this->set(compact(['user']));
+    }
+
+    public function logout() {
+        if($this->request->is(['post', 'patch', 'put'])) {
+
+            if($this->Auth->logout()) {
+                $this->response = $this->response->withExpiredCookie('user');
+                $this->Flash->success(__('You have been successfully logged out!'));
+                $this->redirect(['action' => 'login']);
+            }
+
+        } else {
+            throw new NotFoundException();
+        }
     }
 }

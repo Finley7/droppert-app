@@ -7,6 +7,7 @@
  */
 
 namespace App\Controller;
+use App\Model\Entity\User;
 use App\Model\Table\MediaTable;
 use App\Model\Table\PostsTable;
 use Cake\Cache\Cache;
@@ -14,6 +15,10 @@ use Cake\Error\FatalErrorException;
 use Cake\Event\Event;
 use Cake\Filesystem\File;
 use Cake\Filesystem\Folder;
+use Cake\Http\Cookie\Cookie;
+use Cake\Network\Exception\MethodNotAllowedException;
+use Cake\Network\Exception\NotFoundException;
+use Cake\ORM\Query;
 use Cake\Routing\Router;
 use Cake\Utility\Text;
 
@@ -57,6 +62,10 @@ class PostsController extends AppController
                 $post = $this->Posts->patchEntity($post, $this->request->getData());
                 $post->user_id = $this->Auth->user('id');
 
+                if($this->request->getData()['nsfw'] && !$post->isNSFW()) {
+                    $post->tags .= ',nsfw';
+                }
+
                 // Handle all selected medias and put them in a query.
                 if ($this->Posts->save($post)) {
 
@@ -88,11 +97,94 @@ class PostsController extends AppController
 
     public function view($id = null, $slug = null) {
 
-        $post = $this->Posts->get($id, ['contain' => ['Replies', 'Ratings', 'Media']]);
+        $post = $this->Posts->get($id, [
+            'contain' => [
+                'Users',
+                'Replies' => function(Query $q) {
+                        return $q
+                            ->contain(['Users'])
+                            ->orderDesc('Replies.created');
+                    }
+                ,
+                'Ratings', 'Media']
+        ]);
+
+        if($post->deleted && !(new User($this->Auth->user()))->hasRole('admin')) {
+            throw new NotFoundException();
+        }
+
+        if($post->deleted && (new User($this->Auth->user()))->hasRole('admin')) {
+            $this->Flash->error(__('You are watching a deleted post'));
+        }
+
+        $reply = $this->Posts->Replies->newEntity();
+
+        if($this->request->is(['post', 'patch', 'put'])) {
+
+            $reply = $this->Posts->Replies->patchEntity($reply, $this->request->getData());
+
+            $reply->post_id = $post->id;
+            $reply->user_id = $this->Auth->user('id');
+
+            if($this->Posts->Replies->save($reply)) {
+                $this->Flash->success(__('Yay, your reply has been posted'));
+                return $this->redirect(['action' => 'view', $post->id, $post->slug]);
+            }
+            else
+            {
+                $this->Flash->error(__('Something went wrong while submitting your reply'));
+            }
+
+        }
 
         $tags = explode(',', $post->tags);
 
-        $this->set(compact(['post', 'tags']));
+        $this
+            ->viewBuilder()->setLayout('view-post');
+        $this
+            ->set(compact(['post', 'tags', 'reply']));
+
+    }
+
+//    public function alltime() {
+//
+//
+//        $rating = $this->Posts->Ratings->find('all')
+//            ->where(['type' => 'YAY']);
+//
+//
+//        $this->viewBuilder()->setTemplate('index');
+//        $this->set(compact(['rating']));
+//
+//    }
+
+    public function toggleNswf() {
+
+        if($this->request->is(['put', 'patch', 'post'])) {
+
+            if(!is_null($this->request->getCookie('site'))) {
+
+                $nswfSetting = json_decode(json_encode($this->request->getCookie('site')));
+                $nswfSetting->NSFW = !$nswfSetting->NSFW;
+
+                $cookie = (new Cookie('site'))
+                    ->withExpiry(new \DateTime('+1 year'))
+                    ->withHttpOnly(true)
+                    ->withPath('/')
+                    ->withValue(json_encode(['NSFW' => $nswfSetting->NSFW]));
+
+                $this->Flash->success(
+                    __('You are now seeing {0} NSFW content',
+                        ($nswfSetting->NSFW) ? '' : 'no' )
+                );
+
+                return $this->redirect($this->referer())->withCookie($cookie);
+
+            }
+
+        }
+
+        throw new MethodNotAllowedException();
 
     }
 

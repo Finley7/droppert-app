@@ -1,6 +1,8 @@
 <?php
 namespace App\Model\Table;
 
+use App\Model\Entity\Reply;
+use Cake\Event\Event;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -91,5 +93,12 @@ class RepliesTable extends Table
         $rules->add($rules->existsIn(['user_id'], 'Users'));
 
         return $rules;
+    }
+
+    public function beforeSave(Event $event, Reply $reply) {
+
+        if($reply->isNew()) {
+            $reply->set('body', h($event->getData()['entity']['body']));
+        }
     }
 }

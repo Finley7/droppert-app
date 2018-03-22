@@ -13,6 +13,7 @@ $this->Form->unlockField('media');
 <head>
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
     <title>
         Droppert ~
         <?= $this->fetch('title') ?>
@@ -20,7 +21,6 @@ $this->Form->unlockField('media');
     <?= $this->Html->meta('icon') ?>
         <?= $this->Html->css([
             'foundation.min.css',
-            'videojs/video-js.min.css',
             'fontawesome-all.min.css',
             'app.css'
     ]) ?>
@@ -28,6 +28,7 @@ $this->Form->unlockField('media');
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
+
 </head>
 <body>
 <div class="reveal" id="uploadModal" data-reveal data-close-on-click="false">
@@ -110,15 +111,41 @@ $this->Form->unlockField('media');
                                 <!-- Left Nav Section -->
                                 <div class="top-bar-left">
                                     <ul class="vertical medium-horizontal menu">
-                                        <li><?= $this->Html->link(__('Today\'s best'), ['controller' => 'posts', 'action' => 'index', 'prefix' => false]); ?></li>
+                                        <li><?= $this->Html->link(__('Uploaded today'), ['controller' => 'posts', 'action' => 'index', 'prefix' => false]); ?></li>
                                         <li><?= $this->Html->link(__('Alltime best'), ['controller' => 'posts', 'action' => 'index', 'prefix' => false]); ?></li>
                                     </ul>
                                 </div>
 
-                                <?php if(isset($user->id)): ?>
+
                                 <!-- Right Nav Section -->
                                 <div class="top-bar-right">
                                     <ul class="vertical medium-horizontal menu" data-responsive-menu="drilldown medium-dropdown">
+                                        <li class="nsfw-button">
+
+                                            <?= $this->Form->create(null, ['url' => [
+                                                    'controller' => 'Posts',
+                                                    'action' => 'toggleNswf',
+                                                    'prefix' => false
+                                                ],
+                                                'id' => 'nsfwForm'
+                                            ]);
+                                            ?>
+                                            <strong style="display: inline-block">NSFW</strong>
+                                            <?= $this->Form->radio(
+                                                    'nsfw',
+                                                    [__('Off'), __('On')],
+                                                    [
+                                                        'value' => $nsfw,
+                                                        'onchange' => 'validateNswf()',
+                                                        'class' => 'nsfw-toggle',
+                                                        'label' => [
+                                                                'class' => 'nsfw-label'
+                                                        ]
+                                                    ]
+                                            ); ?>
+                                            <?= $this->Form->end(); ?>
+                                        </li>
+                                        <?php if(isset($user->id)): ?>
                                         <li class="has-submenu">
                                             <a href="#"><?= $user->username; ?></a>
                                             <ul class="submenu menu vertical medium-horizontal" data-submenu>
@@ -134,29 +161,25 @@ $this->Form->unlockField('media');
                                                     ]); ?></li>
                                             </ul>
                                         </li>
+                                        <?php else: ?>
+                                        <li class="has-submenu">
+                                            <a href="#"><?= __('My account'); ?></a>
+                                            <ul class="submenu menu vertical medium-horizontal" data-submenu>
+                                                <li><?= $this->Html->link(__('Sign in'), [
+                                                        'controller' => 'Users',
+                                                        'action' => 'login',
+                                                        'prefix' => false
+                                                    ]); ?></li>
+                                                <li><?= $this->Html->link(__('Register'), [
+                                                        'controller' => 'Users',
+                                                        'action' => 'register',
+                                                        'prefix' => false
+                                                    ]); ?></li>
+                                            </ul>
+                                        </li>
+                                        <?php endif; ?>
                                     </ul>
                                 </div>
-                                <?php else: ?>
-                                    <div class="top-bar-right">
-                                        <ul class="vertical medium-horizontal menu" data-responsive-menu="drilldown medium-dropdown">
-                                            <li class="has-submenu">
-                                                <a href="#"><?= __('My account'); ?></a>
-                                                <ul class="submenu menu vertical medium-horizontal" data-submenu>
-                                                    <li><?= $this->Html->link(__('Sign in'), [
-                                                            'controller' => 'Users',
-                                                            'action' => 'login',
-                                                            'prefix' => false
-                                                        ]); ?></li>
-                                                    <li><?= $this->Html->link(__('Register'), [
-                                                            'controller' => 'Users',
-                                                            'action' => 'register',
-                                                            'prefix' => false
-                                                        ]); ?></li>
-                                                </ul>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                <?php endif; ?>
                             </nav>
                             <?= $this->fetch('content') ?>
                         </div>
@@ -164,11 +187,22 @@ $this->Form->unlockField('media');
                 </div>
             </div>
         </div>
+        <div class="cell content">
+            <footer class="text-center" style="color: #555;padding: 5px; font-size:11px;background: #ccc;">
+                Copyright &copy; FHD 2018. Alle rechten voorbehouden ~ Sponsored by Stefan
+            </footer>
+        </div>
     </div>
 
 
     <footer>
     </footer>
+
+<script>
+    function validateNswf() {
+        document.getElementById('nsfwForm').submit();
+    }
+</script>
 
     <?= $this->Html->script([
             'vendor/jquery.js',

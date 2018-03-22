@@ -3,6 +3,7 @@ namespace App\Model\Entity;
 
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\ORM\Entity;
+use Cake\ORM\TableRegistry;
 
 /**
  * User Entity
@@ -50,5 +51,22 @@ class User extends Entity
 
     protected function _setPassword($password) {
         return (new DefaultPasswordHasher)->hash($password);
+    }
+
+    public function hasRole($roleName) {
+
+        $rolesRegistry = TableRegistry::get('UsersRoles');
+        $_userRoles = $rolesRegistry
+            ->find('all', ['contain' => 'Roles'])
+            ->where(['user_id' => $this->id])
+            ->select('Roles.name')->all();
+
+        foreach($_userRoles as $role) {
+
+            if($role->Roles->name == $roleName){
+                return true;
+            }
+        }
+
     }
 }

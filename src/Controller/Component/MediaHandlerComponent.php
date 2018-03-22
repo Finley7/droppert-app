@@ -92,7 +92,7 @@ class MediaHandlerComponent extends Component
                     ->fromFile(WWW_ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension)
                     ->autoOrient()
                     ->bestFit(600, 600)
-                    ->overlay($this->_watermarkPath, 'bottom right')
+//                    ->overlay($this->_watermarkPath, 'bottom right')
                     ->toFile(WWW_ROOT . DS . 'media' . DS . 'images' . DS . $media->filename . '.png', 'image/png', 70);
 
 
@@ -103,17 +103,16 @@ class MediaHandlerComponent extends Component
         }
         else
         {
-            try {
-            $image = (new SimpleImage())
-                ->fromFile(WWW_ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension)
-                ->autoOrient()
-                ->bestFit(600, 600)
-                ->overlay($this->_watermarkPath, 'bottom right')
-                ->toFile(WWW_ROOT . DS . 'media' . DS . 'images' . DS . $media->filename . '.' . $media->extension, $media->content_type, 70);
-            }
-            catch(\Exception $e) {
-                die($e->getMessage());
-            }
+            $video = $this->_ffmpeg->open(WWW_ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension);
+
+            $video->filters()
+//                ->watermark($this->_watermarkPath, [
+//                    'position' => 'relative',
+//                    'bottom' => 1,
+//                    'right' => 1
+                ->synchronize();
+
+            $video->save(new X264(), WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
         }
 
         try {
@@ -135,16 +134,18 @@ class MediaHandlerComponent extends Component
         $video = $this->_ffmpeg->open(WWW_ROOT . DS . 'media' . DS . 'raw' . DS . $media->filename . '.' . $media->extension);
 
         $video->filters()
-            ->watermark($this->_watermarkPath, [
-                'position' => 'relative',
-                'bottom' => 10,
-                'right' => 10
-            ])->synchronize();
+//            ->watermark($this->_watermarkPath, [
+//                'position' => 'relative',
+//                'bottom' => 10,
+//                'right' => 10
+//            ])
+                ->synchronize();
 
         $video
             ->frame(TimeCode::fromSeconds(1))
             ->save(WWW_ROOT . DS . 'media' . DS . 'thumbnails' . DS . 'thumb_' . $media->filename . '.png');
 
+        //TODO: bug for webm files and other.
         switch ($media->extension) {
 
             case 'mp4':
@@ -158,13 +159,15 @@ class MediaHandlerComponent extends Component
 
                 $video
                     ->save($format, WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
+
+                $video->save(new X264(), WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
                 break;
+
             default:
                 $format = new X264();
 
                 $video
                     ->save($format, WWW_ROOT . DS . 'media' . DS . 'videos' . DS . 'mp4' . DS . $media->filename . '.mp4');
-
                 break;
         }
 

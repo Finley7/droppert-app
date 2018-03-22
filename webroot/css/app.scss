@@ -146,6 +146,9 @@ input[type=number] {
 .icon.upload::before {
     content: '\f093';
 }
+.icon.delete::before {
+    content: '\093';
+}
 
 
 .success.button {
@@ -238,4 +241,45 @@ input[type=number] {
 .video-content {
     width: 100%!important;
     max-width: 810px;
+}
+.replies {
+    padding: 10px;
+
+    .title {
+        font-weight: 900;
+    }
+
+    .reply {
+
+        border: 1px dashed #aaa;
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 0;
+
+        .reply-info {
+            font-size: 11px;
+            color: #666;
+        }
+
+        p {
+            margin:0;
+            padding:0;
+        }
+    }
+}
+
+.nsfw-button {
+    padding: 7px;
+    background: #fff;
+    border-radius: 3px;
+
+
+    .nsfw-label {
+        display: inline-block;
+        margin: 0 5px;
+
+        input {
+            margin: 5px;
+        }
+    }
 }
