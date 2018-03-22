@@ -1,12 +1,48 @@
 <?php
 use Migrations\AbstractMigration;
 
-class UpdatedRatingsDb extends AbstractMigration
+class LatestDb extends AbstractMigration
 {
+
+    public $autoId = false;
+
     public function up()
     {
 
+        $this->table('blocked_ips')
+            ->addColumn('id', 'integer', [
+                'autoIncrement' => true,
+                'default' => null,
+                'limit' => 11,
+                'null' => false,
+                'signed' => false,
+            ])
+            ->addPrimaryKey(['id'])
+            ->addColumn('ip_address', 'string', [
+                'default' => '',
+                'limit' => 255,
+                'null' => false,
+            ])
+            ->addColumn('reason', 'string', [
+                'default' => null,
+                'limit' => 255,
+                'null' => false,
+            ])
+            ->addColumn('created', 'datetime', [
+                'default' => 'CURRENT_TIMESTAMP',
+                'limit' => null,
+                'null' => false,
+            ])
+            ->create();
+
         $this->table('login_fails')
+            ->addColumn('id', 'integer', [
+                'autoIncrement' => true,
+                'default' => null,
+                'limit' => 11,
+                'null' => false,
+            ])
+            ->addPrimaryKey(['id'])
             ->addColumn('username', 'string', [
                 'default' => null,
                 'limit' => 255,
@@ -24,12 +60,13 @@ class UpdatedRatingsDb extends AbstractMigration
             ])
             ->create();
 
-        $this->table('media', ['id' => false, 'primary_key' => ['id']])
+        $this->table('media')
             ->addColumn('id', 'string', [
                 'default' => null,
                 'limit' => 255,
                 'null' => false,
             ])
+            ->addPrimaryKey(['id'])
             ->addColumn('name', 'string', [
                 'default' => null,
                 'limit' => 150,
@@ -82,12 +119,13 @@ class UpdatedRatingsDb extends AbstractMigration
             )
             ->create();
 
-        $this->table('posts', ['id' => false, 'primary_key' => ['id']])
+        $this->table('posts')
             ->addColumn('id', 'string', [
                 'default' => null,
                 'limit' => 255,
                 'null' => false,
             ])
+            ->addPrimaryKey(['id'])
             ->addColumn('slug', 'string', [
                 'default' => null,
                 'limit' => 255,
@@ -136,6 +174,13 @@ class UpdatedRatingsDb extends AbstractMigration
             ->create();
 
         $this->table('ratings')
+            ->addColumn('id', 'integer', [
+                'autoIncrement' => true,
+                'default' => null,
+                'limit' => 11,
+                'null' => false,
+            ])
+            ->addPrimaryKey(['id'])
             ->addColumn('post_id', 'string', [
                 'default' => null,
                 'limit' => 255,
@@ -169,6 +214,13 @@ class UpdatedRatingsDb extends AbstractMigration
             ->create();
 
         $this->table('replies')
+            ->addColumn('id', 'integer', [
+                'autoIncrement' => true,
+                'default' => null,
+                'limit' => 11,
+                'null' => false,
+            ])
+            ->addPrimaryKey(['id'])
             ->addColumn('post_id', 'string', [
                 'default' => null,
                 'limit' => 255,
@@ -207,6 +259,13 @@ class UpdatedRatingsDb extends AbstractMigration
             ->create();
 
         $this->table('roles')
+            ->addColumn('id', 'integer', [
+                'autoIncrement' => true,
+                'default' => null,
+                'limit' => 11,
+                'null' => false,
+            ])
+            ->addPrimaryKey(['id'])
             ->addColumn('name', 'string', [
                 'default' => null,
                 'limit' => 255,
@@ -220,12 +279,13 @@ class UpdatedRatingsDb extends AbstractMigration
             )
             ->create();
 
-        $this->table('sessions', ['id' => false, 'primary_key' => ['id']])
+        $this->table('sessions')
             ->addColumn('id', 'string', [
                 'default' => null,
                 'limit' => 255,
                 'null' => false,
             ])
+            ->addPrimaryKey(['id'])
             ->addColumn('user_id', 'integer', [
                 'default' => null,
                 'limit' => 11,
@@ -259,6 +319,13 @@ class UpdatedRatingsDb extends AbstractMigration
             ->create();
 
         $this->table('users')
+            ->addColumn('id', 'integer', [
+                'autoIncrement' => true,
+                'default' => null,
+                'limit' => 11,
+                'null' => false,
+            ])
+            ->addPrimaryKey(['id'])
             ->addColumn('username', 'string', [
                 'default' => null,
                 'limit' => 150,
@@ -303,7 +370,7 @@ class UpdatedRatingsDb extends AbstractMigration
             )
             ->create();
 
-        $this->table('users_roles', ['id' => false, 'primary_key' => ['user_id', 'role_id']])
+        $this->table('users_roles')
             ->addColumn('user_id', 'integer', [
                 'default' => null,
                 'limit' => 11,
@@ -314,6 +381,7 @@ class UpdatedRatingsDb extends AbstractMigration
                 'limit' => 11,
                 'null' => false,
             ])
+            ->addPrimaryKey(['user_id', 'role_id'])
             ->addIndex(
                 [
                     'role_id',
@@ -496,6 +564,7 @@ class UpdatedRatingsDb extends AbstractMigration
                 'user_id'
             );
 
+        $this->dropTable('blocked_ips');
         $this->dropTable('login_fails');
         $this->dropTable('media');
         $this->dropTable('posts');
